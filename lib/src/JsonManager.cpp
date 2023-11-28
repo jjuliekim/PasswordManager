@@ -17,9 +17,9 @@ using rapidjson::Value, rapidjson::StringBuffer;
 void JsonManager::findJsonFile() {
     ifstream file(location);
     if (!file) {
-        cout << "File was not found" << endl;
+        cout << "File was not found, creating new file" << endl;
         ofstream newFile(location);
-        newFile << "{}";
+        newFile << "[]";
         newFile.close();
     } else {
         cout << "File was found" << endl;

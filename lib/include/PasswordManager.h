@@ -13,10 +13,14 @@ using std::cout, std::endl;
 class PasswordManager {
 private:
     JsonManager jsonManager;
+    string username;
+    string masterPassword;
 public:
     void startup();
 
     void checkJsonFile();
+
+    void displayMenu();
 };
 
 

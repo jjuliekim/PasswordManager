@@ -7,24 +7,33 @@
 #include <iostream>
 
 using std::cout, std::endl, std::cin;
-
+using Color::Modifier;
 
 void PasswordManager::startup() {
-    Color::Modifier def(Color::COLOR_DEFAULT);
-    Color::Modifier blue(Color::BLUE);
+    Modifier def(Color::COLOR_DEFAULT);
+    Modifier blue(Color::BLUE);
     cout << blue << "\n==== Personal Password Manager ====" << def << endl;
     cout << "Username: ";
-    string username;
     cin >> username;
+    if (jsonManager.getInfo().count(username) == 0) {
+        cout << "User does not exist -- making new account" << endl;
+    } else {
+        cout << "User exists" << endl;
+    }
     cout << "Master Password: ";
-    string masterPassword;
     cin >> masterPassword;
+    // checkPassword(); encryption/decryption, validate password
+    // if password is correct, then continue to displayMenu(), else exit with "incorrect password" message
 }
 
 void PasswordManager::checkJsonFile() {
+    cout << "Finding json file." << endl;
     jsonManager.findJsonFile();
     jsonManager.load();
-    // can call jsonManager.getInfo(); whenever?
-    cout << "Loaded" << endl;
+    cout << "Loaded json file." << endl;
+}
+
+void PasswordManager::displayMenu() {
+    cout << "\n==== Menu ====" << endl;
 }
 
