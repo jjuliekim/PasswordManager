@@ -11,6 +11,8 @@
 using std::cout, std::endl;
 
 class PasswordManager {
+private:
+    JsonManager jsonManager;
 public:
     void startup();
     /*
@@ -21,6 +23,7 @@ public:
     PasswordManager(string loginUser);
 
     void load();*/
+    void checkJsonFile();
 };
 
 

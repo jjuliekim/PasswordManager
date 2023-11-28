@@ -9,6 +9,12 @@
 #include "JsonInfo.h"
 
 class JsonManager {
+
+public:
+    void findJsonFile();
+
+
+
 /*private:
     string loginUser;
     JsonInfo jsonInfo;
@@ -20,9 +26,6 @@ public:
     JsonInfo getJsonInfo();
 
     void setJsonInfo(JsonInfo jsonInfo);*/
-
-
-
 };
 
 
