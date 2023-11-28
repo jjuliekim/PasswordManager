@@ -3,13 +3,26 @@
 //
 
 #include "../include/PasswordManager.h"
+#include "colormod.h"
 #include <iostream>
 
-using std::cout, std::endl;
+using std::cout, std::endl, std::cin;
 
 
 void PasswordManager::startup() {
-    cout << "Personal Password Manager" << endl;
+    Color::Modifier def(Color::COLOR_DEFAULT);
+    Color::Modifier reset(Color::FORMAT_RESET);
+    Color::Modifier bold(Color::BOLD);
+    Color::Modifier blue(Color::BLUE);
+    cout << blue << "\nPersonal Password Manager\n" << def << endl;
+    cout << bold << "Username: ";
+    string username;
+    cin >> username;
+    cout << "Master Password: " << reset;
+    string masterPassword;
+    cin >> masterPassword;
+    cout << "username = " << username << endl;
+    cout << "masterPassword = " << masterPassword << endl;
 }
 
 

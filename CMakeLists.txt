@@ -11,7 +11,8 @@ add_library(pwLib
         lib/include/JsonInfo.h
         lib/src/JsonInfo.cpp
         lib/include/Data.h
-        lib/src/Data.cpp)
+        lib/src/Data.cpp
+        lib/include/colormod.h)
 
 target_include_directories(pwLib PRIVATE lib/include lib/cryptopp)
 target_include_directories(pwLib PUBLIC lib/include lib/rapidjson)

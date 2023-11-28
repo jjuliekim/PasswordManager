@@ -216,13 +216,14 @@ int main() {
 using namespace std;
 
 int main() {
-    /*cout << "Enter username: " << endl;
+    PasswordManager manager;
+    manager.startup();
+
+
+
+/*cout << "Enter username: " << endl;
     string username;
     cin >> username;
     PasswordManager manager(username);
     manager.load();*/
-
-    PasswordManager manager;
-    manager.startup();
-
 }
