@@ -8,8 +8,6 @@ add_library(pwLib
         lib/src/PasswordManager.cpp
         lib/include/JsonManager.h
         lib/src/JsonManager.cpp
-        lib/include/JsonInfo.h
-        lib/src/JsonInfo.cpp
         lib/include/Data.h
         lib/src/Data.cpp
         lib/include/colormod.h)

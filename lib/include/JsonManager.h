@@ -5,27 +5,26 @@
 #ifndef PASSWORDMANAGER_JSONMANAGER_H
 #define PASSWORDMANAGER_JSONMANAGER_H
 
+#include <map>
+#include <string>
+#include "Data.h"
 
-#include "JsonInfo.h"
+using namespace std;
 
 class JsonManager {
-
+private:
+    const char *location = R"(/mnt/c/Users/julie/CLionProjects/PasswordManager/data.json)";
+    map<string, Data> info;
 public:
     void findJsonFile();
 
+    map<string, Data> getInfo();
 
+    void setInfo(map<string, Data> jsonInfo);
 
-/*private:
-    string loginUser;
-    JsonInfo jsonInfo;
-public:
     void load();
 
-    void save();
-
-    JsonInfo getJsonInfo();
-
-    void setJsonInfo(JsonInfo jsonInfo);*/
+    // void save();
 };
 
 

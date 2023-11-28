@@ -1,1 +1,20 @@
-{"hello" :  "world"}
+[
+  {
+    "username": "myusername",
+    "data": {
+      "name": "myname",
+      "password": "mypassword",
+      "website": "mywebsite",
+      "authKey": "myauthkey"
+    }
+  },
+  {
+    "username": "myusername2",
+    "data": {
+      "name": "myname2",
+      "password": "mypassword2",
+      "website": "mywebsite2",
+      "authKey": "myauthkey2"
+    }
+  }
+]

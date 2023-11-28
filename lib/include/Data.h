@@ -6,24 +6,33 @@
 #define PASSWORDMANAGER_DATA_H
 
 #include <string>
+
 using std::string;
 
 class Data {
 private:
-    string email;
+    string name;
     string password;
     string website;
-    // string authKey;
+    string authKey;
 public:
-    Data(string email, string password, string website);
-    string getEmail();
+    Data(string name, string password, string website, string authKey);
+
+    string getName();
+
     string getPassword();
+
     string getWebsite();
-    // string getAuthKey();
-    void setEmail(string email);
+
+    string getAuthKey();
+
+    void setName(string email);
+
     void setPassword(string password);
+
     void setWebsite(string website);
-    // void setAuthKey(string authKey);
+
+    void setAuthKey(string authKey);
 };
 
 

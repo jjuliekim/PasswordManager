@@ -23,25 +23,8 @@ void PasswordManager::startup() {
 
 void PasswordManager::checkJsonFile() {
     jsonManager.findJsonFile();
+    jsonManager.load();
+    // can call jsonManager.getInfo(); whenever?
     cout << "Loaded" << endl;
 }
-
-
-
-
-
-/*PasswordManager::PasswordManager(string loginUser) {
-    this->loginUser = loginUser;
-    jsonManager = JsonManager(loginUser);
-}
-
-
-void PasswordManager::load() {
-  // jsonManager = JsonManager();
-   jsonManager.load();
-   cout << "Loaded" << endl;
-}*/
-
-
-
 

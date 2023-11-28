@@ -11,51 +11,86 @@
 #include "../rapidjson/filereadstream.h"
 
 using namespace std;
-using namespace rapidjson;
+using rapidjson::Document, rapidjson::FileWriteStream, rapidjson::Writer, rapidjson::FileReadStream;
+using rapidjson::Value, rapidjson::StringBuffer;
 
 void JsonManager::findJsonFile() {
-    const char* fileLocation = R"(/mnt/c/Users/julie/CLionProjects/PasswordManager/data.json)";
-    ifstream file(fileLocation);
+    ifstream file(location);
     if (!file) {
         cout << "File was not found" << endl;
-        ofstream newFile(fileLocation);
+        ofstream newFile(location);
         newFile << "{}";
         newFile.close();
+    } else {
+        cout << "File was found" << endl;
     }
-    cout << "File was found" << endl;
-    FILE *fp = fopen(fileLocation, "rb");
-    char buffer[65536];
-    FileReadStream is(fp, buffer, sizeof(buffer));
-    Document doc;
-    doc.ParseStream(is);
-    fclose(fp);
 }
 
+map<string, Data> JsonManager::getInfo() {
+    return info;
+}
 
+void JsonManager::setInfo(map<string, Data> jsonInfo) {
+    info = jsonInfo;
+}
 
+void JsonManager::load() {
+    FILE *file = fopen(location, "rb");
+    char buffer[65536];
+    FileReadStream is(file, buffer, sizeof(buffer));
+    Document doc;
+    doc.ParseStream(is);
+    if (doc.HasParseError()) {
+        cout << "Error parsing json file" << endl;
+        exit(1);
+    }
+
+    // read through json file and add to map
+    for (auto &element: doc.GetArray()) {
+        string username = element["username"].GetString();
+        const auto& dataObj = element["data"];
+        string name = dataObj["name"].GetString();
+        string password = dataObj["password"].GetString();
+        string website = dataObj["website"].GetString();
+        string authKey = dataObj["authKey"].GetString();
+        Data data(name, password, website, authKey);
+        info.insert({username, data});
+    }
+
+    // testing: print map contents
+        for (auto& element : info) {
+        // first = key
+        // second = value
+        cout << "account username = " << element.first << endl;
+        cout << "printing data contents..." << endl;
+        cout << "name = " << element.second.getName() << endl;
+        cout << "password = " << element.second.getPassword() << endl;
+        cout << "website = " << element.second.getWebsite() << endl;
+        cout << "authKey = " << element.second.getAuthKey() << endl;
+    }
+}
 
 
 /*
 
-JsonManager::JsonManager(string loginUser) {
-    this->loginUser = loginUser;
-    jsonInfo = JsonInfo();
-}
-
-JsonInfo JsonManager::getJsonInfo() {
-    return jsonInfo;
-}
-
-void JsonManager::setJsonInfo(JsonInfo info) {
-    this->jsonInfo = info;
-}
-
-// load/read file
-void JsonManager::load() {
-
-}
-
-// save/write file
 void JsonManager::save() {
+    Document doc;
+    doc.SetObject();
+    for (auto& map : info) {
+        string username = map.first;
+        Data data = map.second;
+        doc.AddMember(rapidjson::Value(username.c_str(), doc.GetAllocator()).Move(), rapidjson::Value().Move(), doc.GetAllocator());
+        doc[username.c_str()].AddMember("name", rapidjson::Value(data.getName().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+        doc[username.c_str()].AddMember("password", rapidjson::Value(data.getPassword().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+        doc[username.c_str()].AddMember("website", rapidjson::Value(data.getWebsite().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+        doc[username.c_str()].AddMember("authKey", rapidjson::Value(data.getAuthKey().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+    }
 
-}*/
+    FILE *file = fopen(location, "wb");
+    char buffer[65536];
+    FileWriteStream os(file, buffer, sizeof(buffer));
+    Writer<FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(file);
+}
+*/

@@ -15,14 +15,7 @@ private:
     JsonManager jsonManager;
 public:
     void startup();
-    /*
-private:
-    string loginUser;
-    JsonManager jsonManager;
-public:
-    PasswordManager(string loginUser);
 
-    void load();*/
     void checkJsonFile();
 };
 
