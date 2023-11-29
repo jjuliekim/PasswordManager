@@ -85,10 +85,10 @@ void JsonManager::writeFile() {
         Value dataArray(kArrayType);
         for (auto &data: element.second) {
             Value dataObj(kObjectType);
-            dataObj.AddMember("name", StringRef(data.getName().c_str()), doc.GetAllocator());
-            dataObj.AddMember("password", StringRef(data.getPassword().c_str()), doc.GetAllocator());
-            dataObj.AddMember("website", StringRef(data.getWebsite().c_str()), doc.GetAllocator());
-            dataObj.AddMember("authKey", StringRef(data.getAuthKey().c_str()), doc.GetAllocator());
+            dataObj.AddMember("name", Value(StringRef(data.getName().c_str()), doc.GetAllocator()), doc.GetAllocator());
+            dataObj.AddMember("password", Value(StringRef(data.getPassword().c_str()), doc.GetAllocator()), doc.GetAllocator());
+            dataObj.AddMember("website", Value(StringRef(data.getWebsite().c_str()), doc.GetAllocator()), doc.GetAllocator());
+            dataObj.AddMember("authKey", Value(StringRef(data.getAuthKey().c_str()), doc.GetAllocator()), doc.GetAllocator());
             dataArray.PushBack(dataObj, doc.GetAllocator());
         }
         user.AddMember("data", dataArray, doc.GetAllocator());

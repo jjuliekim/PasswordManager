@@ -20,17 +20,6 @@ void PasswordManager::startup() {
     if (jsonManager.getInfo().count(username) == 0) {
         cout << "User does not exist -- making new account for " << username << endl;
         jsonManager.getInfo().insert({username, vector<Data>{Data()}});
-        /*  testing:
-            for (auto &element: jsonManager.getInfo()) {
-            // first = key
-            // second = value
-            cout << "account username = " << element.first << endl;
-            cout << "printing data contents..." << endl;
-            cout << "name = " << element.second.getName() << endl;
-            cout << "password = " << element.second.getPassword() << endl;
-            cout << "website = " << element.second.getWebsite() << endl;
-            cout << "authKey = " << element.second.getAuthKey() << endl;
-        }*/
     }
     cout << "Master Password -> ";
     cin >> masterPassword;
@@ -68,7 +57,6 @@ void PasswordManager::displayMenu() {
         viewPasswords();
     } else if (input == "3") {
         cout << "Exiting password manager..." << endl;
-        exit(0);
     }
 }
 
@@ -85,7 +73,6 @@ void PasswordManager::addPassword() {
     cout << "Auth Key (if none, input \"none\") -> ";
     cin >> authKey;
     Data data(name, password, website, authKey);
-    cout << name << " " << password << " " << website << " " << authKey << endl;
     jsonManager.getInfo()[username].push_back(data);
 }
 
