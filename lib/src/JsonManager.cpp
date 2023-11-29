@@ -13,6 +13,16 @@
 using namespace std;
 using namespace rapidjson;
 
+// getters and setters
+map<string, vector<Data>> &JsonManager::getInfo() {
+    return info;
+}
+
+void JsonManager::setInfo(map<string, vector<Data>> jsonInfo) {
+    info = jsonInfo;
+}
+
+// check if json file exists and load file. If not, create new file
 void JsonManager::findJsonFile() {
     ifstream file(location);
     if (!file) {
@@ -25,14 +35,7 @@ void JsonManager::findJsonFile() {
     }
 }
 
-map<string, vector<Data>>& JsonManager::getInfo() {
-    return info;
-}
-
-void JsonManager::setInfo(map<string, vector<Data>> jsonInfo) {
-    info = jsonInfo;
-}
-
+// load json file into map
 void JsonManager::load() {
     FILE *file = fopen(location, "rb");
     char buffer[65536];
@@ -41,49 +44,44 @@ void JsonManager::load() {
     doc.ParseStream(is);
     if (doc.HasParseError()) {
         cout << "Error parsing json file" << endl;
-        exit(1);
     }
 
     // read through json file and add to map
-
-
-
-
-    /*for (auto &element: doc.GetArray()) {
+    for (auto &element: doc.GetArray()) {
         string username = element["username"].GetString();
+        for (auto &dataContainer: element["data"].GetArray()) {
+            string name = dataContainer["name"].GetString();
+            string password = dataContainer["password"].GetString();
+            string website = dataContainer["website"].GetString();
+            string authKey = dataContainer["authKey"].GetString();
+            Data data(name, password, website, authKey);
+            info[username].push_back(data);
+        }
+    }
 
-        const auto &dataObj = element["data"];
-        string name = dataObj["name"].GetString();
-        string password = dataObj["password"].GetString();
-        string website = dataObj["website"].GetString();
-        string authKey = dataObj["authKey"].GetString();
-        Data data(name, password, website, authKey);
-
-        info[username].push_back(data);
-    }*/
-/*
     for (auto &element: info) {
-        // first = key
-        // second = value
         cout << "account username = " << element.first << endl;
         cout << "printing data contents..." << endl;
-        cout << "name = " << element.second.getName() << endl;
-        cout << "password = " << element.second.getPassword() << endl;
-        cout << "website = " << element.second.getWebsite() << endl;
-        cout << "authKey = " << element.second.getAuthKey() << endl;
-    }*/
+        for (auto &data: element.second) {
+            cout << "name = " << data.getName() << endl;
+            cout << "password = " << data.getPassword() << endl;
+            cout << "website = " << data.getWebsite() << endl;
+            cout << "authKey = " << data.getAuthKey() << endl;
+        }
+    }
 
 }
 
+// write map to json file
 void JsonManager::writeFile() {
     Document doc;
     doc.SetArray();
 
     // add data to JSON array from map
-    for (auto element : info) {
+    for (auto element: info) {
         Value user(kObjectType);
         vector<Data> data = element.second;
-        for (auto v : data) {
+        for (auto v: data) {
 
         }
     }
