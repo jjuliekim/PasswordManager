@@ -1,29 +1,29 @@
 [
   {
-    "username": "myusername",
+    "username": "julie",
     "data": [
       {
-        "name": "myemail",
-        "password": "mypassword",
-        "website" : "mywebsite",
-        "authKey": "myauthkey"
+        "name": "",
+        "password": "",
+        "website": "",
+        "authKey": ""
       },
       {
-        "name": "myemail2",
-        "password": "mypassword2",
-        "website" : "mywebsite2",
-        "authKey": "myauthkey2"
+        "name": "\u0000",
+        "password": "\u0000",
+        "website": "\u0000",
+        "authKey": "\u0000"
       }
     ]
   },
   {
-    "username": "julie",
+    "username": "testUser",
     "data": [
       {
-        "name": "jk",
-        "password": "abc123",
-        "website" : "gmail",
-        "authKey": "none"
+        "name": "",
+        "password": "",
+        "website": "",
+        "authKey": ""
       }
     ]
   }

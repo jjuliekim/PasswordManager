@@ -31,7 +31,6 @@ void PasswordManager::startup() {
             cout << "website = " << element.second.getWebsite() << endl;
             cout << "authKey = " << element.second.getAuthKey() << endl;
         }*/
-        jsonManager.writeFile();
     }
     cout << "Master Password -> ";
     cin >> masterPassword;

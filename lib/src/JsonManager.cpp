@@ -59,7 +59,8 @@ void JsonManager::load() {
         }
     }
 
-    for (auto &element: info) {
+    /*  print info map
+        for (auto &element: info) {
         cout << "account username = " << element.first << endl;
         cout << "printing data contents..." << endl;
         for (auto &data: element.second) {
@@ -68,7 +69,7 @@ void JsonManager::load() {
             cout << "website = " << data.getWebsite() << endl;
             cout << "authKey = " << data.getAuthKey() << endl;
         }
-    }
+    }*/
 
 }
 
@@ -78,31 +79,21 @@ void JsonManager::writeFile() {
     doc.SetArray();
 
     // add data to JSON array from map
-    for (auto element: info) {
-        Value user(kObjectType);
-        vector<Data> data = element.second;
-        for (auto v: data) {
-
-        }
-    }
-
-
-
-
-    /*for (auto& element : info ) {
+    for (auto &element: info) {
         Value user(kObjectType);
         user.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
-        for (auto& data : element.second) {
+        Value dataArray(kArrayType);
+        for (auto &data: element.second) {
             Value dataObj(kObjectType);
             dataObj.AddMember("name", StringRef(data.getName().c_str()), doc.GetAllocator());
             dataObj.AddMember("password", StringRef(data.getPassword().c_str()), doc.GetAllocator());
             dataObj.AddMember("website", StringRef(data.getWebsite().c_str()), doc.GetAllocator());
             dataObj.AddMember("authKey", StringRef(data.getAuthKey().c_str()), doc.GetAllocator());
-
-            user.AddMember("data", dataObj, doc.GetAllocator());
+            dataArray.PushBack(dataObj, doc.GetAllocator());
         }
+        user.AddMember("data", dataArray, doc.GetAllocator());
         doc.PushBack(user, doc.GetAllocator());
-    }*/
+    }
 
     // save array to file
     FILE *file = fopen(location, "wb");
