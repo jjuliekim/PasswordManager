@@ -11,10 +11,9 @@
 #include <vector>
 
 using namespace std;
-
 class JsonManager {
 private:
-    const char *location = R"(/mnt/c/Users/julie/CLionProjects/PasswordManager/data.json)";
+    const char *location = R"(data.json)";
     map<string, vector<Data>> info;
 public:
     void findJsonFile();
