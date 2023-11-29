@@ -24,7 +24,7 @@ public:
 
     void load();
 
-    void save();
+    void writeFile();
 };
 
 

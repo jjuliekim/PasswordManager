@@ -35,7 +35,7 @@ void JsonManager::setInfo(map<string, Data> jsonInfo) {
 
 void JsonManager::load() {
     FILE *file = fopen(location, "rb");
-    char buffer[50000];
+    char buffer[65536];
     FileReadStream is(file, buffer, sizeof(buffer));
     Document doc;
     doc.ParseStream(is);
@@ -57,7 +57,7 @@ void JsonManager::load() {
 
         info.insert({username, data});
     }
-
+/*
     for (auto &element: info) {
         // first = key
         // second = value
@@ -67,11 +67,11 @@ void JsonManager::load() {
         cout << "password = " << element.second.getPassword() << endl;
         cout << "website = " << element.second.getWebsite() << endl;
         cout << "authKey = " << element.second.getAuthKey() << endl;
-    }
+    }*/
 
 }
 
-void JsonManager::save() {
+void JsonManager::writeFile() {
     Document doc;
     doc.SetArray();
 
@@ -80,20 +80,19 @@ void JsonManager::save() {
         Value content(kObjectType);
         content.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
 
-        content.AddMember("name", StringRef(element.second.getName().c_str()), doc.GetAllocator());
-        content.AddMember("password", StringRef(element.second.getPassword().c_str()), doc.GetAllocator());
-        content.AddMember("website", StringRef(element.second.getWebsite().c_str()), doc.GetAllocator());
-        content.AddMember("authKey", StringRef(element.second.getAuthKey().c_str()), doc.GetAllocator());
+        Value data(kObjectType);
+        data.AddMember("name", StringRef(element.second.getName().c_str()), doc.GetAllocator());
+        data.AddMember("password", StringRef(element.second.getPassword().c_str()), doc.GetAllocator());
+        data.AddMember("website", StringRef(element.second.getWebsite().c_str()), doc.GetAllocator());
+        data.AddMember("authKey", StringRef(element.second.getAuthKey().c_str()), doc.GetAllocator());
 
+        content.AddMember("data", data, doc.GetAllocator());
         doc.PushBack(content, doc.GetAllocator());
     }
 
     // save array to file
     FILE *file = fopen(location, "wb");
-    if (!file) {
-        std::cerr << "Error opening file for writing: " << location << std::endl;
-    }
-    char buffer[50000];
+    char buffer[65536];
     FileWriteStream os(file, buffer, sizeof(buffer));
     Writer<FileWriteStream> writer(os);
     doc.Accept(writer);

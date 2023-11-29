@@ -21,6 +21,10 @@ public:
     void checkJsonFile();
 
     void displayMenu();
+
+    void addPassword();
+
+    void viewPasswords();
 };
 
 
