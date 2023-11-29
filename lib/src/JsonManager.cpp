@@ -11,8 +11,7 @@
 #include "../rapidjson/filereadstream.h"
 
 using namespace std;
-using rapidjson::Document, rapidjson::FileWriteStream, rapidjson::Writer, rapidjson::FileReadStream;
-using rapidjson::Value, rapidjson::StringBuffer;
+using namespace rapidjson;
 
 void JsonManager::findJsonFile() {
     ifstream file(location);
@@ -26,7 +25,7 @@ void JsonManager::findJsonFile() {
     }
 }
 
-map<string, Data> JsonManager::getInfo() {
+map<string, Data>& JsonManager::getInfo() {
     return info;
 }
 
@@ -36,7 +35,7 @@ void JsonManager::setInfo(map<string, Data> jsonInfo) {
 
 void JsonManager::load() {
     FILE *file = fopen(location, "rb");
-    char buffer[65536];
+    char buffer[50000];
     FileReadStream is(file, buffer, sizeof(buffer));
     Document doc;
     doc.ParseStream(is);
@@ -48,17 +47,18 @@ void JsonManager::load() {
     // read through json file and add to map
     for (auto &element: doc.GetArray()) {
         string username = element["username"].GetString();
-        const auto& dataObj = element["data"];
+
+        const auto &dataObj = element["data"];
         string name = dataObj["name"].GetString();
         string password = dataObj["password"].GetString();
         string website = dataObj["website"].GetString();
         string authKey = dataObj["authKey"].GetString();
         Data data(name, password, website, authKey);
+
         info.insert({username, data});
     }
 
-    // testing: print map contents
-        for (auto& element : info) {
+    for (auto &element: info) {
         // first = key
         // second = value
         cout << "account username = " << element.first << endl;
@@ -68,29 +68,34 @@ void JsonManager::load() {
         cout << "website = " << element.second.getWebsite() << endl;
         cout << "authKey = " << element.second.getAuthKey() << endl;
     }
+
 }
-
-
-/*
 
 void JsonManager::save() {
     Document doc;
-    doc.SetObject();
-    for (auto& map : info) {
-        string username = map.first;
-        Data data = map.second;
-        doc.AddMember(rapidjson::Value(username.c_str(), doc.GetAllocator()).Move(), rapidjson::Value().Move(), doc.GetAllocator());
-        doc[username.c_str()].AddMember("name", rapidjson::Value(data.getName().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
-        doc[username.c_str()].AddMember("password", rapidjson::Value(data.getPassword().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
-        doc[username.c_str()].AddMember("website", rapidjson::Value(data.getWebsite().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
-        doc[username.c_str()].AddMember("authKey", rapidjson::Value(data.getAuthKey().c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+    doc.SetArray();
+
+    // add data to JSON array from map
+    for (auto& element : info ) {
+        Value content(kObjectType);
+        content.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
+
+        content.AddMember("name", StringRef(element.second.getName().c_str()), doc.GetAllocator());
+        content.AddMember("password", StringRef(element.second.getPassword().c_str()), doc.GetAllocator());
+        content.AddMember("website", StringRef(element.second.getWebsite().c_str()), doc.GetAllocator());
+        content.AddMember("authKey", StringRef(element.second.getAuthKey().c_str()), doc.GetAllocator());
+
+        doc.PushBack(content, doc.GetAllocator());
     }
 
+    // save array to file
     FILE *file = fopen(location, "wb");
-    char buffer[65536];
+    if (!file) {
+        std::cerr << "Error opening file for writing: " << location << std::endl;
+    }
+    char buffer[50000];
     FileWriteStream os(file, buffer, sizeof(buffer));
     Writer<FileWriteStream> writer(os);
     doc.Accept(writer);
     fclose(file);
 }
-*/

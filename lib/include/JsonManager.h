@@ -18,13 +18,13 @@ private:
 public:
     void findJsonFile();
 
-    map<string, Data> getInfo();
+    map<string, Data>& getInfo();
 
     void setInfo(map<string, Data> jsonInfo);
 
     void load();
 
-    // void save();
+    void save();
 };
 
 

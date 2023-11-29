@@ -18,6 +18,8 @@ private:
 public:
     Data(string name, string password, string website, string authKey);
 
+    Data();
+
     string getName();
 
     string getPassword();
@@ -26,13 +28,13 @@ public:
 
     string getAuthKey();
 
-    void setName(string email);
+    void setName(string str);
 
-    void setPassword(string password);
+    void setPassword(string str);
 
-    void setWebsite(string website);
+    void setWebsite(string str);
 
-    void setAuthKey(string authKey);
+    void setAuthKey(string str);
 };
 
 

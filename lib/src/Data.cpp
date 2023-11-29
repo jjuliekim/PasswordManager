@@ -27,18 +27,25 @@ string Data::getAuthKey() {
     return authKey;
 }
 
-void Data::setName(string name) {
-    this->name = name;
+void Data::setName(string str) {
+    name = str;
 }
 
-void Data::setPassword(string password) {
-    this->password = password;
+void Data::setPassword(string str) {
+    password = str;
 }
 
-void Data::setWebsite(string website) {
-    this->website = website;
+void Data::setWebsite(string str) {
+    website = str;
 }
 
-void Data::setAuthKey(string authKey) {
-    this->authKey = authKey;
+void Data::setAuthKey(string str) {
+    authKey = str;
+}
+
+Data::Data() {
+    this->name = "";
+    this->password = "";
+    this->website = "";
+    this->authKey = "";
 }
