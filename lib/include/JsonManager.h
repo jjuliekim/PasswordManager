@@ -8,19 +8,20 @@
 #include <map>
 #include <string>
 #include "Data.h"
+#include <vector>
 
 using namespace std;
 
 class JsonManager {
 private:
     const char *location = R"(/mnt/c/Users/julie/CLionProjects/PasswordManager/data.json)";
-    map<string, Data> info;
+    map<string, vector<Data>> info;
 public:
     void findJsonFile();
 
-    map<string, Data>& getInfo();
+    map<string, vector<Data>>& getInfo();
 
-    void setInfo(map<string, Data> jsonInfo);
+    void setInfo(map<string, vector<Data>> jsonInfo);
 
     void load();
 

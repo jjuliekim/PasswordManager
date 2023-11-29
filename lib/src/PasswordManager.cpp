@@ -19,8 +19,9 @@ void PasswordManager::startup() {
     cin >> username;
     if (jsonManager.getInfo().count(username) == 0) {
         cout << "User does not exist -- making new account for " << username << endl;
-        jsonManager.getInfo().insert({username, Data()});
-        /*for (auto &element: jsonManager.getInfo()) {
+        jsonManager.getInfo().insert({username, vector<Data>{Data()}});
+        /*  testing:
+            for (auto &element: jsonManager.getInfo()) {
             // first = key
             // second = value
             cout << "account username = " << element.first << endl;
@@ -53,19 +54,20 @@ void PasswordManager::displayMenu() {
     cout << "1. Add new password" << endl;
     cout << "2. View passwords" << endl;
     cout << "3. Exit password manager" << endl;
-    cout << "What would you like to do ->";
-    int choice;
-    cin >> choice;
-    while (cin.fail() || choice > 3 || choice < 1) {
-        cout << "Input valid option -> ";
-        cin >> choice;
+    cout << "\nWhat would you like to do ->";
+    // check valid input
+    string input;
+    cin >> input;
+    while (input != "1" && input != "2" && input != "3") {
+        cout << "Invalid input, please try again -> ";
+        cin >> input;
     }
-    if (choice == 1) {
+    if (input == "1") {
         addPassword();
-    } else if (choice == 2) {
+    } else if (input == "2") {
         viewPasswords();
-    } else if (choice == 3) {
-        cout << "Exiting password manager" << endl;
+    } else if (input == "3") {
+        cout << "Exiting password manager..." << endl;
         exit(0);
     }
 }
@@ -73,6 +75,17 @@ void PasswordManager::displayMenu() {
 // add new password data to json file
 void PasswordManager::addPassword() {
     cout << "\n==== Add Password ====" << endl;
+    string name, password, website, authKey;
+    cout << "Username/Email -> ";
+    cin >> name;
+    cout << "Password -> ";
+    cin >> password;
+    cout << "Website -> ";
+    cin >> website;
+    cout << "Auth Key (if n/a, input \"n/a\") -> ";
+    cin >> authKey;
+    Data data(name, password, website, authKey);
+
 }
 
 // view all saved passwords

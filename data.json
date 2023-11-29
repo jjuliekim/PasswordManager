@@ -16,14 +16,5 @@
       "website": "myauthkey",
       "authKey": "myauthkey"
     }
-  },
-  {
-    "username": "myusername2",
-    "data": {
-      "name": "myauthk",
-      "password": "myauthkey2\u0000",
-      "website": "myauthkey2",
-      "authKey": "myauthkey2"
-    }
   }
 ]

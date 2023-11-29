@@ -25,11 +25,11 @@ void JsonManager::findJsonFile() {
     }
 }
 
-map<string, Data>& JsonManager::getInfo() {
+map<string, vector<Data>>& JsonManager::getInfo() {
     return info;
 }
 
-void JsonManager::setInfo(map<string, Data> jsonInfo) {
+void JsonManager::setInfo(map<string, vector<Data>> jsonInfo) {
     info = jsonInfo;
 }
 
@@ -55,7 +55,7 @@ void JsonManager::load() {
         string authKey = dataObj["authKey"].GetString();
         Data data(name, password, website, authKey);
 
-        info.insert({username, data});
+        info[username].push_back(data);
     }
 /*
     for (auto &element: info) {
@@ -77,17 +77,18 @@ void JsonManager::writeFile() {
 
     // add data to JSON array from map
     for (auto& element : info ) {
-        Value content(kObjectType);
-        content.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
+        Value user(kObjectType);
+        user.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
+        for (auto& data : element.second) {
+            Value dataObj(kObjectType);
+            dataObj.AddMember("name", StringRef(data.getName().c_str()), doc.GetAllocator());
+            dataObj.AddMember("password", StringRef(data.getPassword().c_str()), doc.GetAllocator());
+            dataObj.AddMember("website", StringRef(data.getWebsite().c_str()), doc.GetAllocator());
+            dataObj.AddMember("authKey", StringRef(data.getAuthKey().c_str()), doc.GetAllocator());
 
-        Value data(kObjectType);
-        data.AddMember("name", StringRef(element.second.getName().c_str()), doc.GetAllocator());
-        data.AddMember("password", StringRef(element.second.getPassword().c_str()), doc.GetAllocator());
-        data.AddMember("website", StringRef(element.second.getWebsite().c_str()), doc.GetAllocator());
-        data.AddMember("authKey", StringRef(element.second.getAuthKey().c_str()), doc.GetAllocator());
-
-        content.AddMember("data", data, doc.GetAllocator());
-        doc.PushBack(content, doc.GetAllocator());
+            user.AddMember("data", dataObj, doc.GetAllocator());
+        }
+        doc.PushBack(user, doc.GetAllocator());
     }
 
     // save array to file
