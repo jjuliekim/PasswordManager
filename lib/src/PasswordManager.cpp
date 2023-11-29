@@ -38,6 +38,7 @@ void PasswordManager::startup() {
     // checkPassword(); encryption/decryption, validate password
     // if password is correct, then continue to displayMenu(), else exit with "incorrect password" message
     displayMenu();
+    jsonManager.writeFile();
 }
 
 // check if json file exists and load file. If not, create new file
@@ -82,10 +83,11 @@ void PasswordManager::addPassword() {
     cin >> password;
     cout << "Website -> ";
     cin >> website;
-    cout << "Auth Key (if n/a, input \"n/a\") -> ";
+    cout << "Auth Key (if none, input \"none\") -> ";
     cin >> authKey;
     Data data(name, password, website, authKey);
-
+    cout << name << " " << password << " " << website << " " << authKey << endl;
+    jsonManager.getInfo()[username].push_back(data);
 }
 
 // view all saved passwords

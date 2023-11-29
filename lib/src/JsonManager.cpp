@@ -45,7 +45,11 @@ void JsonManager::load() {
     }
 
     // read through json file and add to map
-    for (auto &element: doc.GetArray()) {
+
+
+
+
+    /*for (auto &element: doc.GetArray()) {
         string username = element["username"].GetString();
 
         const auto &dataObj = element["data"];
@@ -56,7 +60,7 @@ void JsonManager::load() {
         Data data(name, password, website, authKey);
 
         info[username].push_back(data);
-    }
+    }*/
 /*
     for (auto &element: info) {
         // first = key
@@ -76,7 +80,18 @@ void JsonManager::writeFile() {
     doc.SetArray();
 
     // add data to JSON array from map
-    for (auto& element : info ) {
+    for (auto element : info) {
+        Value user(kObjectType);
+        vector<Data> data = element.second;
+        for (auto v : data) {
+
+        }
+    }
+
+
+
+
+    /*for (auto& element : info ) {
         Value user(kObjectType);
         user.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
         for (auto& data : element.second) {
@@ -89,7 +104,7 @@ void JsonManager::writeFile() {
             user.AddMember("data", dataObj, doc.GetAllocator());
         }
         doc.PushBack(user, doc.GetAllocator());
-    }
+    }*/
 
     // save array to file
     FILE *file = fopen(location, "wb");
