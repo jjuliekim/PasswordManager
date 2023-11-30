@@ -124,7 +124,7 @@ void PasswordManager::optionsResult(int index) {
     cout << "2. Edit password" << endl;
     cout << "3. Edit TOTP key" << endl;
     cout << "4. Delete password info" << endl;
-    cout << "5. Main menu" << endl;
+    cout << "5. View all passwords" << endl;
     cout << "-> ";
     cin >> input;
     while (input != "1" && input != "2" && input != "3" && input != "4" && input != "5") {
@@ -154,6 +154,6 @@ void PasswordManager::optionsResult(int index) {
         cout << "[Password info deleted successfully]" << endl;
         optionsResult(index);
     } else if (input == "5") {
-        displayMenu();
+        viewPasswords();
     }
 }
