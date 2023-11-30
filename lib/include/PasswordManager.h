@@ -6,7 +6,6 @@
 #define PASSWORDMANAGER_PASSWORDMANAGER_H
 
 #include "JsonManager.h"
-
 #include <iostream>
 
 using std::cout, std::endl;

@@ -12,10 +12,8 @@ namespace Color {
         RED = 31,
         GREEN = 32,
         BLUE = 34,
-        CYAN = 96,
         COLOR_DEFAULT = 39,
         BOLD = 1,
-        UNDERLINE = 4,
         FORMAT_RESET = 0
     };
 
