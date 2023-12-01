@@ -15,6 +15,7 @@ private:
     JsonManager jsonManager;
     string username;
     string masterPassword;
+    bool firstTime = false;
 public:
     void startup();
 
@@ -27,6 +28,14 @@ public:
     void viewPasswords();
 
     void optionsResult(int index);
+
+    bool checkPassword();
+
+    void generatePassword();
+
+    void encrypt();
+
+    string decrypt();
 };
 
 
