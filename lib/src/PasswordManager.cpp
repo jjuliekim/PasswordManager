@@ -212,7 +212,6 @@ void PasswordManager::generatePassword() {
         } else {
             password += uppercase[rand() % uppercase.length()];
         }
-        cout << "making password: " << password << endl;
     }
     // shuffle
     vector<char> passwordVector(password.begin(), password.end());
