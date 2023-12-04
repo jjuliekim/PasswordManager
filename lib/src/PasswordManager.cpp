@@ -7,8 +7,10 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
+#include "../digestpp/digestpp.hpp"
 
 using namespace std;
+using namespace digestpp;
 using Color::Modifier;
 
 // color modifier variables
@@ -24,15 +26,20 @@ void PasswordManager::startup() {
     cout << blue << "\n==== Personal Password Manager ====" << def << endl;
     cout << "Username -> ";
     cin >> username;
+    sha256 shaHash;
+    username = shaHash.absorb(username).hexdigest();
     if (jsonManager.getLoginInfo().count(username) == 0) {
-        cout << bold << "[" << username << " ... Signing Up]" << endl;
+        cout << green << "[Signing Up]" << endl;
         jsonManager.getInfo().insert({username, vector<Data>{Data()}});
         firstTime = true;
     } else {
-        cout << bold << "[" << username << " ... Logging in]" << endl;
+        cout << green << "[Logging in]" << endl;
     }
-    cout << reset << "Master Password -> ";
+    cout << def << "Master Password -> ";
     cin >> masterPassword;
+    sha256 hasher;
+    masterPassword = hasher.absorb(username + masterPassword + username).hexdigest();
+
     if (firstTime) {
         jsonManager.getLoginInfo().insert({username, masterPassword});
     }
@@ -73,7 +80,7 @@ void PasswordManager::displayMenu() {
     } else if (input == "3") {
         generatePassword();
     } else if (input == "4") {
-        cout << bold << "[Exiting password manager...]" << endl;
+        cout << blue << "[Exiting password manager...]" << endl;
     }
 }
 
@@ -211,6 +218,3 @@ void PasswordManager::generatePassword() {
     cout << "Generated password: " << password << endl;
     displayMenu();
 }
-
-
-

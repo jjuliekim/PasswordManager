@@ -8,8 +8,6 @@
 #include "JsonManager.h"
 #include <iostream>
 
-using std::cout, std::endl;
-
 class PasswordManager {
 private:
     JsonManager jsonManager;
