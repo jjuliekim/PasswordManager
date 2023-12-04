@@ -5,15 +5,8 @@
 #include "../include/PasswordManager.h"
 #include "colormod.h"
 #include <iostream>
-#include "../cryptopp/cryptlib.h"
-#include "../cryptopp/rijndael.h"
-#include "../cryptopp/modes.h"
-#include "../cryptopp/files.h"
-#include "../cryptopp/osrng.h"
-#include "../cryptopp/hex.h"
 #include <algorithm>
 #include <random>
-#include <chrono>
 
 using namespace std;
 using Color::Modifier;
@@ -31,7 +24,7 @@ void PasswordManager::startup() {
     cout << blue << "\n==== Personal Password Manager ====" << def << endl;
     cout << "Username -> ";
     cin >> username;
-    if (jsonManager.getInfo().count(username) == 0) {
+    if (jsonManager.getLoginInfo().count(username) == 0) {
         cout << bold << "[" << username << " ... Signing Up]" << endl;
         jsonManager.getInfo().insert({username, vector<Data>{Data()}});
         firstTime = true;
@@ -40,19 +33,22 @@ void PasswordManager::startup() {
     }
     cout << reset << "Master Password -> ";
     cin >> masterPassword;
-    if (!checkPassword()) {
+    if (firstTime) {
+        jsonManager.getLoginInfo().insert({username, masterPassword});
+    }
+    if (masterPassword != jsonManager.getLoginInfo()[username]) {
         cout << red << "[Incorrect password]" << endl;
         return;
     }
     cout << green << "[Logged in successfully]" << endl;
     displayMenu();
-    jsonManager.writeFile();
+    jsonManager.writeFiles();
 }
 
 // check if json file exists and load file. If not, create new file
 void PasswordManager::checkJsonFile() {
     jsonManager.findJsonFile();
-    jsonManager.load();
+    jsonManager.loadFiles();
 }
 
 // password manager main menu
@@ -182,11 +178,6 @@ void PasswordManager::optionsResult(int index) {
     optionsResult(index);
 }
 
-// decrypt json file to check if master password is correct
-bool PasswordManager::checkPassword() {
-    return decrypt() == masterPassword;
-}
-
 // password generator
 void PasswordManager::generatePassword() {
     cout << "Password length (> 5) -> ";
@@ -220,90 +211,6 @@ void PasswordManager::generatePassword() {
     cout << "Generated password: " << password << endl;
     displayMenu();
 }
-/*
-
-// encrypt data
-void PasswordManager::encrypt() {
-    using namespace CryptoPP;
-
-    AutoSeededRandomPool prng;
-    HexEncoder encoder(new FileSink(std::cout));
-
-    SecByteBlock key(AES::DEFAULT_KEYLENGTH);
-    SecByteBlock iv(AES::BLOCKSIZE);
-
-    prng.GenerateBlock(key, key.size());
-    prng.GenerateBlock(iv, iv.size());
-
-    std::string plain = "CBC Mode Test";
-    std::string cipher, recovered;
-
-    std::cout << "plain text: " << plain << std::endl;
-
-    */
-/*********************************\
-    \*********************************//*
 
 
-    try {
-        CBC_Mode<AES>::Encryption e;
-        e.SetKeyWithIV(key, key.size(), iv);
-
-        StringSource s(plain, true,
-                       new StreamTransformationFilter(e,
-                                                      new StringSink(cipher)
-                       ) // StreamTransformationFilter
-        ); // StringSource
-    }
-    catch (const Exception &e) {
-        std::cerr << e.what() << std::endl;
-        exit(1);
-    }
-
-    */
-/*********************************\
-    \*********************************//*
-
-
-    std::cout << "key: ";
-    encoder.Put(key, key.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
-
-    std::cout << "iv: ";
-    encoder.Put(iv, iv.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
-
-    std::cout << "cipher text: ";
-    encoder.Put((const CryptoPP::byte *) &cipher[0], cipher.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
-
-    */
-/*********************************\
-    \*********************************//*
-
-
-    try {
-        CBC_Mode<AES>::Decryption d;
-        d.SetKeyWithIV(key, key.size(), iv);
-
-        StringSource s(cipher, true,
-                       new StreamTransformationFilter(d,
-                                                      new StringSink(recovered)
-                       ) // StreamTransformationFilter
-        ); // StringSource
-
-        std::cout << "recovered text: " << recovered << std::endl;
-    }
-    catch (const Exception &e) {
-        std::cerr << e.what() << std::endl;
-        exit(1);
-    }
-}
-*/
-string PasswordManager::decrypt() {
-    return "j";
-}
 

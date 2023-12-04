@@ -29,13 +29,7 @@ public:
 
     void optionsResult(int index);
 
-    bool checkPassword();
-
     void generatePassword();
-
-    void encrypt();
-
-    string decrypt();
 };
 
 
