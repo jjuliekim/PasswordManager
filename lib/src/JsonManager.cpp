@@ -18,24 +18,39 @@ map<string, vector<Data>> &JsonManager::getInfo() {
     return info;
 }
 
+map <string, string> &JsonManager::getLoginInfo() {
+    return loginInfo;
+}
+
 void JsonManager::setInfo(map<string, vector<Data>> jsonInfo) {
     info = jsonInfo;
 }
 
+void JsonManager::setLoginInfo(map<string, string> jsonLoginInfo) {
+    loginInfo = jsonLoginInfo;
+}
+
 // check if json file exists and load file. If not, create new file
 void JsonManager::findJsonFile() {
-    ifstream file(location);
+    ifstream file(dataLocation);
     if (!file) {
-        ofstream newFile(location);
+        ofstream newFile(dataLocation);
+        newFile << "[]";
+        newFile.close();
+    }
+    ifstream loginFile(loginLocation);
+    if (!loginFile) {
+        cout << "making new file" << endl;
+        ofstream newFile(loginLocation);
         newFile << "[]";
         newFile.close();
     }
 }
 
-// load json file into map
-void JsonManager::load() {
+// load data json file into map
+void JsonManager::loadDataFile() {
     // load file
-    FILE *file = fopen(location, "rb");
+    FILE *file = fopen(dataLocation, "rb");
     char buffer[65536];
     FileReadStream is(file, buffer, sizeof(buffer));
     Document doc;
@@ -57,8 +72,27 @@ void JsonManager::load() {
     }
 }
 
-// write map to json file
-void JsonManager::writeFile() {
+// load login json file into map
+void JsonManager::loadLoginFile() {
+    // load file
+    FILE *file = fopen(loginLocation, "rb");
+    char buffer[65536];
+    FileReadStream is(file, buffer, sizeof(buffer));
+    Document doc;
+    doc.ParseStream(is);
+    if (doc.HasParseError()) {
+        cout << "Error parsing json file" << endl;
+    }
+    // read through json file and add to map
+    for (auto &element: doc.GetArray()) {
+        string username = element["username"].GetString();
+        string masterPassword = element["masterPassword"].GetString();
+        loginInfo[username] = masterPassword;
+    }
+}
+
+// write data map to json file
+void JsonManager::writeDataFile() {
     Document doc;
     doc.SetArray();
     // add data from map to JSON array
@@ -79,10 +113,40 @@ void JsonManager::writeFile() {
         doc.PushBack(user, doc.GetAllocator());
     }
     // write to json file
-    FILE* file = fopen(location, "wb");
+    FILE* file = fopen(dataLocation, "wb");
     char buffer[65536];
     FileWriteStream os(file, buffer, sizeof(buffer));
     Writer<FileWriteStream> writer(os);
     doc.Accept(writer);
     fclose(file);
+}
+
+// write login map to json file
+void JsonManager::writeLoginFile() {
+    Document doc;
+    doc.SetArray();
+    // add data from map to JSON array
+    for (auto &element: loginInfo) {
+        Value user(kObjectType);
+        user.AddMember("username", StringRef(element.first.c_str()), doc.GetAllocator());
+        user.AddMember("masterPassword", StringRef(element.second.c_str()), doc.GetAllocator());
+        doc.PushBack(user, doc.GetAllocator());
+    }
+    // write to json file
+    FILE* file = fopen(loginLocation, "wb");
+    char buffer[65536];
+    FileWriteStream os(file, buffer, sizeof(buffer));
+    Writer<FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(file);
+}
+
+void JsonManager::writeFiles() {
+    writeLoginFile();
+    writeDataFile();
+}
+
+void JsonManager::loadFiles() {
+    loadLoginFile();
+    loadDataFile();
 }

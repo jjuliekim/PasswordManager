@@ -13,8 +13,10 @@
 using namespace std;
 class JsonManager {
 private:
-    const char *location = R"(data.json)";
+    const char *dataLocation = R"(data.json)";
+    const char *loginLocation = R"(login.json)";
     map<string, vector<Data>> info;
+    map<string, string> loginInfo;
 public:
     void findJsonFile();
 
@@ -22,9 +24,21 @@ public:
 
     void setInfo(map<string, vector<Data>> jsonInfo);
 
-    void load();
+    void loadDataFile();
 
-    void writeFile();
+    void writeDataFile();
+
+    void loadLoginFile();
+
+    void writeLoginFile();
+
+    map<string, string>& getLoginInfo();
+
+    void setLoginInfo(map<string, string> jsonLoginInfo);
+
+    void loadFiles();
+
+    void writeFiles();
 };
 
 

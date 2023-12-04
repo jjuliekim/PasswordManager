@@ -12,8 +12,7 @@ add_library(pwLib
         lib/src/Data.cpp
         lib/include/colormod.h)
 
-target_include_directories(pwLib PRIVATE lib/include lib/cryptopp)
-target_include_directories(pwLib PUBLIC lib/include lib/rapidjson)
+target_include_directories(pwLib PRIVATE lib/include lib/rapidjson)
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE lib/include)
