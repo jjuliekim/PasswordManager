@@ -27,15 +27,23 @@ public:
 
     void enterUsername();
 
-    void checkUsername(const string& username);
+    void checkUsername();
 
     void loadImage(const char *img);
 
     void enterPassword();
 
-    void checkPassword(string pw);
+    void checkPassword();
 
     void displayMenu();
+
+    void checkJsonFile();
+
+    void viewPasswords();
+
+    void addPassword();
+
+    void generatePassword();
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H

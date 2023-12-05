@@ -6,6 +6,7 @@ using namespace digestpp;
 
 int main() {
     PasswordManager app;
+    app.checkJsonFile();
     app.loginWindow();
 
     return 0;

@@ -65,7 +65,6 @@ void JsonManager::loadDataFile() {
             string name = dataContainer["name"].GetString();
             string password = dataContainer["password"].GetString();
             string website = dataContainer["website"].GetString();
-            string authKey = dataContainer["authKey"].GetString();
             Data data(name, password, website, authKey);
             info[username].push_back(data);
         }
@@ -106,7 +105,6 @@ void JsonManager::writeDataFile() {
             dataObj.AddMember("name", Value(StringRef(data.getName().c_str()), doc.GetAllocator()), doc.GetAllocator());
             dataObj.AddMember("password", Value(StringRef(data.getPassword().c_str()), doc.GetAllocator()), doc.GetAllocator());
             dataObj.AddMember("website", Value(StringRef(data.getWebsite().c_str()), doc.GetAllocator()), doc.GetAllocator());
-            dataObj.AddMember("authKey", Value(StringRef(data.getAuthKey().c_str()), doc.GetAllocator()), doc.GetAllocator());
             dataArray.PushBack(dataObj, doc.GetAllocator());
         }
         user.AddMember("data", dataArray, doc.GetAllocator());

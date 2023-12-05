@@ -94,9 +94,7 @@ void PasswordTerminal::addPassword() {
     cin >> password;
     cout << "Website/App -> ";
     cin >> website;
-    cout << "TOTP Authentication Key (if none, input \"none\") -> ";
-    cin >> authKey;
-    Data data(name, password, website, authKey);
+    Data data(name, password, website);
     jsonManager.getDataInfo()[username].push_back(data);
     cout << green << "[Password info added successfully]" << def << endl;
     if (firstTime) {
@@ -141,7 +139,6 @@ void PasswordTerminal::viewPasswords() {
          << endl;
     cout << "Username/Email -> " << jsonManager.getDataInfo()[username][index - 1].getName() << endl;
     cout << "Password -> " << jsonManager.getDataInfo()[username][index - 1].getPassword() << endl;
-    cout << "TOTP Authentication Key -> " << jsonManager.getDataInfo()[username][index - 1].getAuthKey() << endl;
     optionsResult(index);
 }
 
@@ -151,12 +148,11 @@ void PasswordTerminal::optionsResult(int index) {
     cout << blue << "\nOptions: " << def << endl;
     cout << bold << "[1] " << reset << "Edit username/email" << endl;
     cout << bold << "[2] " << reset << "Edit password" << endl;
-    cout << bold << "[3] " << reset << "Edit TOTP key" << endl;
-    cout << bold << "[4] " << reset << "Delete password info" << endl;
-    cout << bold << "[5] " << reset << "View all passwords" << endl;
+    cout << bold << "[3] " << reset << "Delete password info" << endl;
+    cout << bold << "[4] " << reset << "View all passwords" << endl;
     cout << "-> ";
     cin >> input;
-    while (input != "1" && input != "2" && input != "3" && input != "4" && input != "5") {
+    while (input != "1" && input != "2" && input != "3" && input != "4") {
         cout << red << "Invalid input, please try again -> " << def;
         cin >> input;
     }
@@ -171,14 +167,9 @@ void PasswordTerminal::optionsResult(int index) {
         jsonManager.getDataInfo()[username][index - 1].setPassword(input);
         cout << green << "[Password changed successfully]" << def << endl;
     } else if (input == "3") {
-        cout << "New TOTP key -> ";
-        cin >> input;
-        jsonManager.getDataInfo()[username][index - 1].setAuthKey(input);
-        cout << green << "[TOTP key changed successfully]" << def << endl;
-    } else if (input == "4") {
         jsonManager.getDataInfo()[username].erase(jsonManager.getDataInfo()[username].begin() + index - 1);
         cout << green << "[Password info deleted successfully]" << def << endl;
-    } else if (input == "5") {
+    } else if (input == "4") {
         viewPasswords();
         return;
     }
