@@ -51,7 +51,11 @@ public:
 
     void editPassword(int index);
 
-    void deletePassword(int index);
+    string getNameInput();
+
+    string getPasswordInput();
+
+    string getWebsiteInput();
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H

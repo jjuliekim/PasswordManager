@@ -87,7 +87,7 @@ void PasswordTerminal::displayMenu() {
 // add new password data to json file
 void PasswordTerminal::addPassword() {
     cout << blue << "\n==== Add Password ====" << def << endl;
-    string name, password, website, authKey;
+    string name, password, website;
     cout << "Username/Email -> ";
     cin >> name;
     cout << "Password -> ";

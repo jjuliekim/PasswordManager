@@ -298,17 +298,18 @@ void PasswordManager::viewOptions(int index) {
                     break;
                 } else if (event.key.keysym.sym == SDLK_1) {
                     editUsername(index);
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (event.key.keysym.sym == SDLK_2) {
                     editPassword(index);
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (event.key.keysym.sym == SDLK_3) {
-                    deletePassword(index);
-                    SDL_Delay(2000);
+                    jsonManager.getDataInfo()[username].erase(jsonManager.getDataInfo()[username].begin() + index);
+                    loadImage("images/edit/deleted.bmp");
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 }
@@ -321,17 +322,18 @@ void PasswordManager::viewOptions(int index) {
                     break;
                 } else if (x >= 62 && x <= 106 && y >= 243 && y <= 288) {
                     editUsername(index);
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (x >= 62 && x <= 106 && y >= 326 && y <= 371) {
                     editPassword(index);
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (x >= 62 && x <= 107 && y >= 404 && y <= 449) {
-                    deletePassword(index);
-                    SDL_Delay(2000);
+                    jsonManager.getDataInfo()[username].erase(jsonManager.getDataInfo()[username].begin() + index);
+                    loadImage("images/edit/deleted.bmp");
+                    SDL_Delay(1500);
                     viewPasswords();
                     break;
                 }
@@ -452,17 +454,174 @@ void PasswordManager::editPassword(int index) {
     }
 }
 
-// delete password in json file
-void PasswordManager::deletePassword(int index) {
-
-}
-
+// add password data to json file
 void PasswordManager::addPassword() {
-
+    string website = getWebsiteInput();
+    string name = getNameInput();
+    string password = getPasswordInput();
+    Data data(name, password, website);
+    jsonManager.getDataInfo()[username].push_back(data);
+    if (firstTime) {
+        jsonManager.getDataInfo()[username].erase(jsonManager.getDataInfo()[username].begin());
+        firstTime = false;
+    }
+    jsonManager.writeDataFile();
+    loadImage("images/edit/added.bmp");
+    SDL_Delay(1500);
+    displayMenu();
 }
 
+// get user input for new website info
+string PasswordManager::getWebsiteInput() {
+    string input;
+    loadImage("images/enterWebsite/website.bmp");
+    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int i = 0;
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                }
+            }
+        }
+    }
+}
+
+// get user input for new username info
+string PasswordManager::getNameInput() {
+    string input;
+    loadImage("images/enterWebsite/website.bmp");
+    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int i = 0;
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                }
+            }
+        }
+    }
+}
+
+// get user input for new password info
+string PasswordManager::getPasswordInput() {
+    string input;
+    loadImage("images/enterPW/password.bmp");
+    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int i = 0;
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    SDL_Delay(1500);
+                    return input;
+                }
+            }
+        }
+    }
+}
+
+// generate a random password for user
 void PasswordManager::generatePassword() {
 
 }
-
-
