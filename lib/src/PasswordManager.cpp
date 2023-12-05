@@ -267,17 +267,29 @@ void PasswordManager::viewPasswords() {
                 if (event.key.keysym.sym == SDLK_0 && input.empty()) {
                     displayMenu();
                     break;
-                } else if (event.key.keysym.sym < SDLK_1 || event.key.keysym.sym > SDLK_9) {
-                    loadImage("images/viewPW/invalidInput.bmp");
-                } else if (event.key.keysym.sym != SDLK_RETURN) {
-                    input += event.key.keysym.sym;
-                } else if (!input.empty()) {
+                }
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    if (stoi(input) > 0 && stoi(input) <= jsonManager.getDataInfo()[username].size()) {
+                        loadImage("images/viewPW/validInput.bmp");
+                        SDL_Delay(1000);
+                        viewOptions(stoi(input) - 1);
+                        break;
+                    } else {
+                        loadImage("images/viewPW/invalidInput.bmp");
+                        SDL_Delay(1000);
+                        loadImage("images/viewPW/viewMenu.bmp");
+                        input = "";
+                    }
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (input.length() == 0) {
+                        loadImage("images/viewPW/viewMenu.bmp");
+                    }
+                } else if (event.key.keysym.sym >= SDLK_0 && event.key.keysym.sym <= SDLK_9) {
                     loadImage("images/viewPW/validInput.bmp");
-                    SDL_Delay(1500);
-                    cout << "index: " << stoi(input) - 1 << endl;
-                    cout << "information: " << jsonManager.getDataInfo()[username][stoi(input) - 1].getWebsite() << endl;
-                    viewOptions(stoi(input) - 1);
-                    break;
+                    input += event.key.keysym.sym;
                 }
             }
         }
@@ -287,7 +299,7 @@ void PasswordManager::viewPasswords() {
 // view options for specific password
 void PasswordManager::viewOptions(int index) {
     loadImage("images/viewPW/options.bmp");
-    cout << blue << "[Account information for " << jsonManager.getDataInfo()[username][index].getWebsite() << "]"
+    cout << blue << "\n[Account information for " << jsonManager.getDataInfo()[username][index].getWebsite() << "]"
          << def << endl;
     cout << "Username/Email -> " << jsonManager.getDataInfo()[username][index].getName() << endl;
     cout << "Password -> " << jsonManager.getDataInfo()[username][index].getPassword() << endl;
@@ -629,7 +641,6 @@ string PasswordManager::getPasswordInput() {
 // generate a random password for user
 void PasswordManager::generatePassword() {
     int length = getPasswordLength();
-
     string password;
     string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string lowercase = "abcdefghijklmnopqrstuvwxyz";
