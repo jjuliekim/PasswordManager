@@ -218,6 +218,18 @@ void PasswordManager::displayMenu() {
                     break;
                 }
             }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1) {
+                    viewPasswords();
+                    break;
+                } else if (event.key.keysym.sym == SDLK_2) {
+                    addPassword();
+                    break;
+                } else if (event.key.keysym.sym == SDLK_3) {
+                    generatePassword();
+                    break;
+                }
+            }
         }
     }
 }
