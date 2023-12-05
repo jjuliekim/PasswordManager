@@ -56,6 +56,8 @@ public:
     string getPasswordInput();
 
     string getWebsiteInput();
+
+    int getPasswordLength();
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H

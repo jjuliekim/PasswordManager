@@ -255,6 +255,7 @@ void PasswordManager::viewPasswords() {
             cout << blue << "[" << i + 1 << "] " << def << jsonManager.getDataInfo()[username][i].getWebsite() << endl;
         }
     }
+    string input;
     while (true) {
         SDL_Event event;
         if (SDL_PollEvent(&event)) {
@@ -262,16 +263,17 @@ void PasswordManager::viewPasswords() {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_0) {
+                if (event.key.keysym.sym == SDLK_0 && input.empty()) {
                     displayMenu();
                     break;
                 } else if (event.key.keysym.sym < SDLK_1 || event.key.keysym.sym > SDLK_9) {
                     loadImage("images/viewPW/invalidInput.bmp");
-                } else if (event.key.keysym.sym - SDLK_1 < jsonManager.getDataInfo()[username].size()) {
+                } else if (event.key.keysym.sym != SDLK_RETURN) {
+                    input += event.key.keysym.sym;
+                } else {
                     loadImage("images/viewPW/validInput.bmp");
                     SDL_Delay(1500);
-                    cout << "index: " << event.key.keysym.sym - SDLK_1 << endl;
-                    viewOptions(event.key.keysym.sym - SDLK_1);
+                    viewOptions(stoi(input) - 1);
                     break;
                 }
             }
@@ -487,7 +489,7 @@ string PasswordManager::getWebsiteInput() {
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_RETURN) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/websiteInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -512,7 +514,7 @@ string PasswordManager::getWebsiteInput() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/websiteInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 }
@@ -524,8 +526,8 @@ string PasswordManager::getWebsiteInput() {
 // get user input for new username info
 string PasswordManager::getNameInput() {
     string input;
-    loadImage("images/enterWebsite/website.bmp");
-    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+    loadImage("images/login/username.bmp");
+    vector<string> typingImages{"username.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int i = 0;
 
@@ -537,7 +539,7 @@ string PasswordManager::getNameInput() {
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_RETURN) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/nameInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -546,14 +548,14 @@ string PasswordManager::getNameInput() {
                     }
                     if (i > 0) {
                         i--;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        string prefix = "images/login/" + typingImages[i];
                         loadImage(prefix.c_str());
                     }
                 } else {
                     input += event.key.keysym.sym;
                     if (i < typingImages.size() - 1) {
                         i++;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        string prefix = "images/login/" + typingImages[i];
                         loadImage(prefix.c_str());
                     }
                 }
@@ -562,7 +564,7 @@ string PasswordManager::getNameInput() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/nameInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 }
@@ -575,7 +577,7 @@ string PasswordManager::getNameInput() {
 string PasswordManager::getPasswordInput() {
     string input;
     loadImage("images/enterPW/password.bmp");
-    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+    vector<string> typingImages{"password.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int i = 0;
 
@@ -587,7 +589,7 @@ string PasswordManager::getPasswordInput() {
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_RETURN) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/passInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -596,14 +598,14 @@ string PasswordManager::getPasswordInput() {
                     }
                     if (i > 0) {
                         i--;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        string prefix = "images/enterPW/" + typingImages[i];
                         loadImage(prefix.c_str());
                     }
                 } else {
                     input += event.key.keysym.sym;
                     if (i < typingImages.size() - 1) {
                         i++;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
+                        string prefix = "images/enterPW/" + typingImages[i];
                         loadImage(prefix.c_str());
                     }
                 }
@@ -612,7 +614,7 @@ string PasswordManager::getPasswordInput() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/enterWebsite/websiteInputted.bmp");
+                    loadImage("images/add/passInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 }
@@ -623,5 +625,91 @@ string PasswordManager::getPasswordInput() {
 
 // generate a random password for user
 void PasswordManager::generatePassword() {
+    int pwLength = getPasswordLength();
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/add/passInputted.bmp");
+                    cout << password << endl;
+                    SDL_Delay(1500);
+                    break;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/add/passInputted.bmp");
+                    SDL_Delay(1500);
+                    break;
+                }
+            }
+        }
+    }
+}
 
+// get user input for password length
+int PasswordManager::getPasswordLength() {
+    string input;
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/add/passInputted.bmp");
+                    SDL_Delay(1500);
+                    break;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/add/passInputted.bmp");
+                    SDL_Delay(1500);
+                    break;
+                }
+            }
+        }
+    }
 }
