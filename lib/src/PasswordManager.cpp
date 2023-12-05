@@ -8,9 +8,18 @@
 #include <vector>
 #include <random>
 #include "../digestpp/digestpp.hpp"
+#include "colormod.h"
 
 using namespace std;
 using namespace digestpp;
+using namespace Color;
+
+Modifier blue(Color::BLUE);
+Modifier red(Color::RED);
+Modifier green(Color::GREEN);
+Modifier bold(Color::BOLD);
+Modifier reset(Color::FORMAT_RESET);
+Modifier def(Color::COLOR_DEFAULT);
 
 // find and parse json files
 void PasswordManager::loadJson() {
@@ -102,12 +111,12 @@ void PasswordManager::checkPassword() {
         jsonManager.getLoginInfo().insert({username, masterPassword});
     } else if (masterPassword != jsonManager.getLoginInfo()[username]) {
         loadImage("images/enterPW/noPW.bmp");
-        SDL_Delay(2000);
+        SDL_Delay(1500);
         enterPassword();
         return;
     } else {
         loadImage("images/enterPW/yesPW.bmp");
-        SDL_Delay(2000);
+        SDL_Delay(1500);
     }
     jsonManager.writeLoginFile();
     displayMenu();
@@ -118,7 +127,6 @@ void PasswordManager::login(string prefix, string ogImage, string &input) {
     vector<string> typingImages{ogImage, "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int index = 0;
-
     while (true) {
         SDL_Event event;
         if (SDL_PollEvent(&event)) {
@@ -203,17 +211,6 @@ void PasswordManager::displayMenu() {
         }
     }
 }
-
-#include "colormod.h"
-
-using namespace Color;
-
-Modifier blue(Color::BLUE);
-Modifier red(Color::RED);
-Modifier green(Color::GREEN);
-Modifier bold(Color::BOLD);
-Modifier reset(Color::FORMAT_RESET);
-Modifier def(Color::COLOR_DEFAULT);
 
 // view all password info
 void PasswordManager::viewPasswords() {
