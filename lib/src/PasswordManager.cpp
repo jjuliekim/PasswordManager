@@ -267,7 +267,7 @@ void PasswordManager::viewPasswords() {
                     loadImage("images/viewPW/invalidInput.bmp");
                 } else if (event.key.keysym.sym - SDLK_1 < jsonManager.getDataInfo()[username].size()) {
                     loadImage("images/viewPW/validInput.bmp");
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     cout << "index: " << event.key.keysym.sym - SDLK_1 << endl;
                     viewOptions(event.key.keysym.sym - SDLK_1);
                     break;
@@ -356,6 +356,7 @@ void PasswordManager::editUsername(int index) {
                 if (event.key.keysym.sym == SDLK_RETURN) {
                     loadImage("images/edit/editedName.bmp");
                     jsonManager.getDataInfo()[username][index].setName(input);
+                    jsonManager.writeDataFile();
                     SDL_Delay(2000);
                     viewOptions(index);
                     break;
@@ -365,8 +366,12 @@ void PasswordManager::editUsername(int index) {
                     }
                     if (i > 0) {
                         i--;
-                        string prefix = "images/login/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                        if (i == 0) {
+                            loadImage("images/edit/name.bmp");
+                        } else {
+                            string prefix = "images/login/" + typingImages[i];
+                            loadImage(prefix.c_str());
+                        }
                     }
                 } else {
                     input += event.key.keysym.sym;
@@ -383,6 +388,7 @@ void PasswordManager::editUsername(int index) {
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
                     loadImage("images/edit/editedName.bmp");
                     jsonManager.getDataInfo()[username][index].setName(input);
+                    jsonManager.writeDataFile();
                     SDL_Delay(2000);
                     viewOptions(index);
                     break;
