@@ -13,21 +13,13 @@
 using namespace std;
 using namespace rapidjson;
 
-// getters and setters
+// getters
 map<string, vector<Data>> &JsonManager::getDataInfo() {
     return info;
 }
 
 map <string, string> &JsonManager::getLoginInfo() {
     return loginInfo;
-}
-
-void JsonManager::setInfo(map<string, vector<Data>> jsonInfo) {
-    info = jsonInfo;
-}
-
-void JsonManager::setLoginInfo(map<string, string> jsonLoginInfo) {
-    loginInfo = jsonLoginInfo;
 }
 
 // check if json file exists and load file. If not, create new file
@@ -139,11 +131,14 @@ void JsonManager::writeLoginFile() {
     fclose(file);
 }
 
+// call all write functions
 void JsonManager::writeFiles() {
+    cout << "saving" << endl;
     writeLoginFile();
     writeDataFile();
 }
 
+// call all load functions
 void JsonManager::loadFiles() {
     loadLoginFile();
     loadDataFile();

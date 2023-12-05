@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+// ansi color for terminal password manager
 namespace Color {
     enum Code {
         RED = 31,

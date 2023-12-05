@@ -8,6 +8,7 @@
 #include "JsonManager.h"
 #include <iostream>
 
+// terminal application for password manager
 class PasswordTerminal {
 private:
     JsonManager jsonManager;

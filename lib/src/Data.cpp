@@ -30,10 +30,6 @@ void Data::setPassword(string str) {
     password = str;
 }
 
-void Data::setWebsite(string str) {
-    website = str;
-}
-
 Data::Data() {
     this->name = "";
     this->password = "";

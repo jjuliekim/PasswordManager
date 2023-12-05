@@ -9,6 +9,7 @@
 
 using std::string;
 
+// password data for json file
 class Data {
 private:
     string name;
@@ -28,8 +29,6 @@ public:
     void setName(string str);
 
     void setPassword(string str);
-
-    void setWebsite(string str);
 };
 
 

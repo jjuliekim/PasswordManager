@@ -22,8 +22,6 @@ public:
 
     map<string, vector<Data>>& getDataInfo();
 
-    void setInfo(map<string, vector<Data>> jsonInfo);
-
     void loadDataFile();
 
     void writeDataFile();
@@ -33,8 +31,6 @@ public:
     void writeLoginFile();
 
     map<string, string>& getLoginInfo();
-
-    void setLoginInfo(map<string, string> jsonLoginInfo);
 
     void loadFiles();
 

@@ -23,6 +23,8 @@ private:
     string masterPassword;
     bool firstTime = false;
 public:
+    void loadJson();
+
     void loginWindow();
 
     void enterUsername();
@@ -36,8 +38,6 @@ public:
     void checkPassword();
 
     void displayMenu();
-
-    void checkJsonFile();
 
     void viewPasswords();
 
@@ -58,6 +58,8 @@ public:
     string getWebsiteInput();
 
     int getPasswordLength();
+
+    void login(string prefix, string ogImage, string &input);
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H
