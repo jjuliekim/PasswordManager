@@ -233,7 +233,9 @@ void PasswordManager::displayMenu() {
         }
     }
 }
+
 #include "colormod.h"
+
 using namespace Color;
 
 Modifier blue(Color::BLUE);
@@ -281,7 +283,7 @@ void PasswordManager::viewPasswords() {
 void PasswordManager::viewOptions(int index) {
     loadImage("images/viewPW/options.bmp");
     cout << blue << "[Account information for " << jsonManager.getDataInfo()[username][index].getWebsite() << "]"
-    << def << endl;
+         << def << endl;
     cout << "Username/Email -> " << jsonManager.getDataInfo()[username][index].getName() << endl;
     cout << "Password -> " << jsonManager.getDataInfo()[username][index].getPassword() << endl;
     while (true) {
@@ -340,8 +342,8 @@ void PasswordManager::viewOptions(int index) {
 
 // edit username in json file
 void PasswordManager::editUsername(int index) {
-    loadImage("images/edit/name.bmp");
-    vector<string> typingImages{"name.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+    loadImage("images/login/username.bmp");
+    vector<string> typingImages{"username.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int i = 0;
     string input;
@@ -366,12 +368,8 @@ void PasswordManager::editUsername(int index) {
                     }
                     if (i > 0) {
                         i--;
-                        if (i == 0) {
-                            loadImage("images/edit/name.bmp");
-                        } else {
-                            string prefix = "images/login/" + typingImages[i];
-                            loadImage(prefix.c_str());
-                        }
+                        string prefix = "images/login/" + typingImages[i];
+                        loadImage(prefix.c_str());
                     }
                 } else {
                     input += event.key.keysym.sym;
@@ -400,7 +398,58 @@ void PasswordManager::editUsername(int index) {
 
 // edit password in json file
 void PasswordManager::editPassword(int index) {
+    loadImage("images/enterPW/password.bmp");
+    vector<string> typingImages{"password.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int i = 0;
+    string input;
 
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/edit/editedPass.bmp");
+                    jsonManager.getDataInfo()[username][index].setPassword(input);
+                    jsonManager.writeDataFile();
+                    SDL_Delay(2000);
+                    viewOptions(index);
+                    break;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/enterPW/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/edit/editedPass.bmp");
+                    jsonManager.getDataInfo()[username][index].setName(input);
+                    jsonManager.writeDataFile();
+                    SDL_Delay(2000);
+                    viewOptions(index);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 // delete password in json file
