@@ -6,6 +6,7 @@
 #include <iostream>
 #include <SDL2/SDL_ttf.h>
 #include <vector>
+#include <random>
 #include "../digestpp/digestpp.hpp"
 
 using namespace std;
@@ -270,9 +271,11 @@ void PasswordManager::viewPasswords() {
                     loadImage("images/viewPW/invalidInput.bmp");
                 } else if (event.key.keysym.sym != SDLK_RETURN) {
                     input += event.key.keysym.sym;
-                } else {
+                } else if (!input.empty()) {
                     loadImage("images/viewPW/validInput.bmp");
                     SDL_Delay(1500);
+                    cout << "index: " << stoi(input) - 1 << endl;
+                    cout << "information: " << jsonManager.getDataInfo()[username][stoi(input) - 1].getWebsite() << endl;
                     viewOptions(stoi(input) - 1);
                     break;
                 }
@@ -359,7 +362,7 @@ void PasswordManager::editUsername(int index) {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
                     loadImage("images/edit/editedName.bmp");
                     jsonManager.getDataInfo()[username][index].setName(input);
                     jsonManager.writeDataFile();
@@ -384,7 +387,7 @@ void PasswordManager::editUsername(int index) {
                     }
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
@@ -415,7 +418,7 @@ void PasswordManager::editPassword(int index) {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
                     loadImage("images/edit/editedPass.bmp");
                     jsonManager.getDataInfo()[username][index].setPassword(input);
                     jsonManager.writeDataFile();
@@ -440,7 +443,7 @@ void PasswordManager::editPassword(int index) {
                     }
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
@@ -488,7 +491,7 @@ string PasswordManager::getWebsiteInput() {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
                     loadImage("images/add/websiteInputted.bmp");
                     SDL_Delay(1500);
                     return input;
@@ -510,7 +513,7 @@ string PasswordManager::getWebsiteInput() {
                     }
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
@@ -538,7 +541,7 @@ string PasswordManager::getNameInput() {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
                     loadImage("images/add/nameInputted.bmp");
                     SDL_Delay(1500);
                     return input;
@@ -560,7 +563,7 @@ string PasswordManager::getNameInput() {
                     }
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
@@ -588,7 +591,7 @@ string PasswordManager::getPasswordInput() {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
                     loadImage("images/add/passInputted.bmp");
                     SDL_Delay(1500);
                     return input;
@@ -610,7 +613,7 @@ string PasswordManager::getPasswordInput() {
                     }
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
@@ -625,43 +628,43 @@ string PasswordManager::getPasswordInput() {
 
 // generate a random password for user
 void PasswordManager::generatePassword() {
-    int pwLength = getPasswordLength();
+    int length = getPasswordLength();
+
+    string password;
+    string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string lowercase = "abcdefghijklmnopqrstuvwxyz";
+    string number = "0123456789";
+    string symbol = "!@#$%^&*?";
+    for (int i = 0; i < length; i++) {
+        if (i % 4 == 0) {
+            password += lowercase[rand() % lowercase.length()];
+        } else if (i % 4 == 1) {
+            password += number[rand() % number.length()];
+        } else if (i % 4 == 2) {
+            password += symbol[rand() % symbol.length()];
+        } else {
+            password += uppercase[rand() % uppercase.length()];
+        }
+    }
+    // shuffle
+    vector<char> passwordVector(password.begin(), password.end());
+    shuffle(passwordVector.begin(), passwordVector.end(), mt19937(random_device()()));
+    password = string(passwordVector.begin(), passwordVector.end());
+    cout << blue << "==== Generated password ====" << def << endl;
+    cout << password << endl;
+
+    loadImage("images/genPW/pwGen.bmp");
     while (true) {
         SDL_Event event;
         if (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 break;
             }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
-                    loadImage("images/add/passInputted.bmp");
-                    cout << password << endl;
-                    SDL_Delay(1500);
-                    break;
-                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
-                    if (input.length() > 0) {
-                        input.pop_back();
-                    }
-                    if (i > 0) {
-                        i--;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                } else {
-                    input += event.key.keysym.sym;
-                    if (i < typingImages.size() - 1) {
-                        i++;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                }
-            }
             if (event.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/add/passInputted.bmp");
-                    SDL_Delay(1500);
+                if (x >= 150 && x <= 250 && y >= 380 && y <= 414) {
+                    displayMenu();
                     break;
                 }
             }
@@ -671,6 +674,7 @@ void PasswordManager::generatePassword() {
 
 // get user input for password length
 int PasswordManager::getPasswordLength() {
+    loadImage("images/genPW/pwLength.bmp");
     string input;
     while (true) {
         SDL_Event event;
@@ -679,35 +683,38 @@ int PasswordManager::getPasswordLength() {
                 break;
             }
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN) {
-                    loadImage("images/add/passInputted.bmp");
-                    SDL_Delay(1500);
-                    break;
+                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
+                    if (stoi(input) > 5) {
+                        return stoi(input);
+                    } else {
+                        loadImage("images/genPW/invalidLength.bmp");
+                        input = "";
+                    }
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
                     if (input.length() > 0) {
                         input.pop_back();
                     }
-                    if (i > 0) {
-                        i--;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                    if (input.length() == 0) {
+                        loadImage("images/genPW/pwLength.bmp");
                     }
-                } else {
+                } else if (event.key.keysym.sym >= SDLK_0 && event.key.keysym.sym <= SDLK_9) {
                     input += event.key.keysym.sym;
-                    if (i < typingImages.size() - 1) {
-                        i++;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
+                    loadImage("images/genPW/validLength.bmp");
+                } else {
+                    loadImage("images/genPW/invalidLength.bmp");
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/add/passInputted.bmp");
-                    SDL_Delay(1500);
-                    break;
+                    if (stoi(input) > 5) {
+                        return stoi(input);
+                    } else {
+                        loadImage("images/genPW/invalidLength.bmp");
+                        SDL_Delay(1500);
+                        input = "";
+                    }
                 }
             }
         }
