@@ -1,220 +1,243 @@
 //
-// Created by julie on 11/27/2023.
+// Created by julie on 12/3/2023.
 //
 
-#include "../include/PasswordManager.h"
-#include "colormod.h"
+#include "PasswordManager.h"
 #include <iostream>
-#include <algorithm>
-#include <random>
+#include <SDL2/SDL_ttf.h>
+#include <vector>
 #include "../digestpp/digestpp.hpp"
 
 using namespace std;
 using namespace digestpp;
-using Color::Modifier;
 
-// color modifier variables
-Modifier blue(Color::BLUE);
-Modifier red(Color::RED);
-Modifier green(Color::GREEN);
-Modifier bold(Color::BOLD);
-Modifier reset(Color::FORMAT_RESET);
-Modifier def(Color::COLOR_DEFAULT);
+// start up page
+void PasswordManager::loginWindow() {
+    window = SDL_CreateWindow("Password Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                              width, height, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    // initializing: returns zero on success else non-zero
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        printf("error initializing SDL: %s\n", SDL_GetError());
+        return;
+    }
+    // load image to surface
+    SDL_Surface *image = SDL_LoadBMP("images/main.bmp");
 
-// log in with username and master password
-void PasswordManager::startup() {
-    cout << blue << "\n==== Personal Password Manager ====" << def << endl;
-    cout << "Username -> ";
-    cin >> username;
+    // create a texture
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
+
+    // update the surface
+    SDL_UpdateWindowSurface(window);
+
+
+    SDL_Rect rect{0, 0, width, height};
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_RenderPresent(renderer);
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            // if user closes window
+            if (event.type == SDL_QUIT) {
+                cout << "pressed quit" << endl;
+                break;
+            }
+            // if user clicks mouse anywhere
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                cout << "clicked mouse" << endl;
+                enterUsername();
+                break;
+            }
+        }
+    }
+    // destroy and exit
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(image);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+}
+
+void PasswordManager::loadImage(const char *img) {
+    SDL_Surface *image = SDL_LoadBMP(img);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
+    SDL_UpdateWindowSurface(window);
+    SDL_Rect rect{0, 0, width, height};
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_RenderPresent(renderer);
+}
+
+// log in page
+void PasswordManager::enterUsername() {
+    loadImage("images/login/username.bmp");
+    vector<string> typingImages{"username.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp",
+                                "4Star.bmp", "5Star.bmp", "6Star.bmp", "7Star.bmp",
+                                "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int index = 0;
+    string username;
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            // if user closes window
+            if (event.type == SDL_QUIT) {
+                cout << "pressed quit" << endl;
+                break;
+            }
+            // if user presses a key
+            if (event.type == SDL_KEYDOWN) {
+                // if user presses enter
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    cout << "pressed enter" << endl;
+                    checkUsername(username);
+                    cout << "username inputted: " << username << endl;
+                    break;
+                }
+                    // if user presses backspace
+                else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    cout << "pressed backspace" << endl;
+                    // remove last character from username
+                    if (username.length() > 0) {
+                        username.pop_back();
+                    }
+                    if (index > 0) {
+                        index--;
+                        string prefix = "images/login/" + typingImages[index];
+                        loadImage(prefix.c_str());
+                    }
+                }
+                    // if user presses any other key
+                else {
+                    // add character to username
+                    cout << "pressed " << event.key.keysym.sym << endl;
+                    username += event.key.keysym.sym;
+                    if (index < typingImages.size() - 1) {
+                        index++;
+                        string prefix = "images/login/" + typingImages[index];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            // if user clicks mouse
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                cout << "clicked mouse" << endl;
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    cout << "clicked submit" << endl;
+                    checkUsername(username);
+                    cout << "username inputted: " << username << endl;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+// check if username exists in json
+void PasswordManager::checkUsername(const string& name) {
     sha256 shaHash;
-    username = shaHash.absorb(username).hexdigest();
+    username = shaHash.absorb(name).hexdigest();
     if (jsonManager.getLoginInfo().count(username) == 0) {
-        cout << green << "[Signing Up]" << endl;
-        jsonManager.getInfo().insert({username, vector<Data>{Data()}});
+        cout << "new account" << endl;
+        jsonManager.getDataInfo().insert({username, vector<Data>{Data()}});
         firstTime = true;
-    } else {
-        cout << green << "[Logging in]" << endl;
     }
-    cout << def << "Master Password -> ";
-    cin >> masterPassword;
-    sha256 hasher;
-    masterPassword = hasher.absorb(username + masterPassword + username).hexdigest();
-
-    if (firstTime) {
-        jsonManager.getLoginInfo().insert({username, masterPassword});
-    }
-    if (masterPassword != jsonManager.getLoginInfo()[username]) {
-        cout << red << "[Incorrect password]" << endl;
-        return;
-    }
-    cout << green << "[Logged in successfully]" << endl;
-    displayMenu();
-    jsonManager.writeFiles();
+    cout << "username: " << username << endl;
+    jsonManager.writeDataFile();
+    enterPassword();
 }
 
-// check if json file exists and load file. If not, create new file
-void PasswordManager::checkJsonFile() {
-    jsonManager.findJsonFile();
-    jsonManager.loadFiles();
-}
-
-// password manager main menu
-void PasswordManager::displayMenu() {
-    cout << blue << "\n==== Menu ====" << def << endl;
-    cout << bold << "[1] " << reset << "Add new password info" << endl;
-    cout << bold << "[2] " << reset << "View passwords" << endl;
-    cout << bold << "[3] " << reset << "Generate a password" << endl;
-    cout << bold << "[4] " << reset << "Exit password manager" << endl;
-    cout << "\nWhat would you like to do -> ";
-    // check valid input
-    string input;
-    cin >> input;
-    while (input != "1" && input != "2" && input != "3" && input != "4") {
-        cout << red << "Invalid input, please try again -> " << def;
-        cin >> input;
-    }
-    if (input == "1") {
-        addPassword();
-    } else if (input == "2") {
-        viewPasswords();
-    } else if (input == "3") {
-        generatePassword();
-    } else if (input == "4") {
-        cout << blue << "[Exiting password manager...]" << endl;
-    }
-}
-
-// add new password data to json file
-void PasswordManager::addPassword() {
-    cout << blue << "\n==== Add Password ====" << def << endl;
-    string name, password, website, authKey;
-    cout << "Username/Email -> ";
-    cin >> name;
-    cout << "Password -> ";
-    cin >> password;
-    cout << "Website/App -> ";
-    cin >> website;
-    cout << "TOTP Authentication Key (if none, input \"none\") -> ";
-    cin >> authKey;
-    Data data(name, password, website, authKey);
-    jsonManager.getInfo()[username].push_back(data);
-    cout << green << "[Password info added successfully]" << def << endl;
-    if (firstTime) {
-        jsonManager.getInfo()[username].erase(jsonManager.getInfo()[username].begin());
-        firstTime = false;
-    }
-    displayMenu();
-}
-
-// view all saved passwords
-void PasswordManager::viewPasswords() {
-    cout << blue << "\n==== View Passwords ====" << def << endl;
-    cout << bold << "[0] " << reset << "Back to main menu" << endl;
-    if (!firstTime) {
-        for (int i = 0; i < jsonManager.getInfo()[username].size(); i++) {
-            cout << bold << "[" << i + 1 << "] " << reset << jsonManager.getInfo()[username][i].getWebsite() << endl;
-        }
-    }
-    cout << "View info for website/app # -> " << endl;
-    // check valid input
-    string input;
-    cin >> input;
-    // check that index is an int
-    int index;
-    try {
-        index = stoi(input);
-    } catch (invalid_argument &e) { // how to repeat until valid input? do while loop?
-        cout << red << "Invalid input, please try again -> " << def;
-        cin >> input;
-        index = stoi(input);
-    }
-    while (index < -1 || index > jsonManager.getInfo()[username].size()) {
-        cout << red << "Invalid input, please try again -> " << def;
-        cin >> input;
-        index = stoi(input);
-    }
-    if (index == 0) {
-        displayMenu();
-        return;
-    }
-    cout << blue << "[Account information for " << jsonManager.getInfo()[username][index - 1].getWebsite() << "]" << def
-         << endl;
-    cout << "Username/Email -> " << jsonManager.getInfo()[username][index - 1].getName() << endl;
-    cout << "Password -> " << jsonManager.getInfo()[username][index - 1].getPassword() << endl;
-    cout << "TOTP Authentication Key -> " << jsonManager.getInfo()[username][index - 1].getAuthKey() << endl;
-    optionsResult(index);
-}
-
-// view options for specific password
-void PasswordManager::optionsResult(int index) {
-    string input;
-    cout << blue << "\nOptions: " << def << endl;
-    cout << bold << "[1] " << reset << "Edit username/email" << endl;
-    cout << bold << "[2] " << reset << "Edit password" << endl;
-    cout << bold << "[3] " << reset << "Edit TOTP key" << endl;
-    cout << bold << "[4] " << reset << "Delete password info" << endl;
-    cout << bold << "[5] " << reset << "View all passwords" << endl;
-    cout << "-> ";
-    cin >> input;
-    while (input != "1" && input != "2" && input != "3" && input != "4" && input != "5") {
-        cout << red << "Invalid input, please try again -> " << def;
-        cin >> input;
-    }
-    if (input == "1") {
-        cout << "New username/email -> ";
-        cin >> input;
-        jsonManager.getInfo()[username][index - 1].setName(input);
-        cout << green << "[Username/email changed successfully]" << def << endl;
-    } else if (input == "2") {
-        cout << "New password -> ";
-        cin >> input;
-        jsonManager.getInfo()[username][index - 1].setPassword(input);
-        cout << green << "[Password changed successfully]" << def << endl;
-    } else if (input == "3") {
-        cout << "New TOTP key -> ";
-        cin >> input;
-        jsonManager.getInfo()[username][index - 1].setAuthKey(input);
-        cout << green << "[TOTP key changed successfully]" << def << endl;
-    } else if (input == "4") {
-        jsonManager.getInfo()[username].erase(jsonManager.getInfo()[username].begin() + index - 1);
-        cout << green << "[Password info deleted successfully]" << def << endl;
-    } else if (input == "5") {
-        viewPasswords();
-        return;
-    }
-    optionsResult(index);
-}
-
-// password generator
-void PasswordManager::generatePassword() {
-    cout << "Password length (> 5) -> ";
-    int length;
-    cin >> length;
-    while (length < 5) {
-        cout << "Invalid input, please try again -> ";
-        cin >> length;
-    }
-    // generate password
+// graphics for entering password screen
+void PasswordManager::enterPassword() {
+    loadImage("images/enterPW/password.bmp");
+    vector<string> typingImages{"password.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp",
+                                "4Star.bmp", "5Star.bmp", "6Star.bmp", "7Star.bmp",
+                                "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int index = 0;
     string password;
-    string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    string lowercase = "abcdefghijklmnopqrstuvwxyz";
-    string number = "0123456789";
-    string symbol = "!@#$%^&*?";
-    for (int i = 0; i < length; i++) {
-        if (i % 4 == 0) {
-            password += lowercase[rand() % lowercase.length()];
-        } else if (i % 4 == 1) {
-            password += number[rand() % number.length()];
-        } else if (i % 4 == 2) {
-            password += symbol[rand() % symbol.length()];
-        } else {
-            password += uppercase[rand() % uppercase.length()];
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            // if user closes window
+            if (event.type == SDL_QUIT) {
+                cout << "pressed quit" << endl;
+                break;
+            }
+            // if user presses a key
+            if (event.type == SDL_KEYDOWN) {
+                // if user presses enter
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    cout << "pressed enter" << endl;
+                    cout << "password inputted: " << endl;
+                    checkPassword(password);
+                    break;
+                }
+                    // if user presses backspace
+                else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    cout << "pressed backspace" << endl;
+                    // remove last character from username
+                    if (password.length() > 0) {
+                        password.pop_back();
+                    }
+                    if (index > 0) {
+                        index--;
+                        string prefix = "images/enterPW/" + typingImages[index];
+                        loadImage(prefix.c_str());
+                    }
+                }
+                    // if user presses any other key
+                else {
+                    // add character to password
+                    cout << "pressed " << event.key.keysym.sym << endl;
+                    password += event.key.keysym.sym;
+                    if (index < typingImages.size() - 1) {
+                        index++;
+                        string prefix = "images/enterPW/" + typingImages[index];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            // if user clicks mouse
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                cout << "clicked mouse" << endl;
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    cout << "clicked submit" << endl;
+                    cout << "password inputted: " << password << endl;
+                    checkPassword(password);
+                    break;
+                }
+            }
         }
     }
-    // shuffle
-    vector<char> passwordVector(password.begin(), password.end());
-    shuffle(passwordVector.begin(), passwordVector.end(), mt19937(random_device()()));
-    password = string(passwordVector.begin(), passwordVector.end());
-    cout << "Generated password: " << password << endl;
+}
+
+void PasswordManager::checkPassword(string pw) {
+    sha256 hash;
+    masterPassword = hash.absorb(username + pw + username).hexdigest();
+    if (firstTime) {
+        cout << "signing up" << endl;
+        jsonManager.getLoginInfo().insert({username, masterPassword});
+    } else if (masterPassword != jsonManager.getLoginInfo()[username]) {
+        cout << "incorrect password" << endl;
+        loadImage("images/enterPW/incorrectPW.bmp");
+        SDL_Delay(1000);
+        enterPassword();
+        return;
+    } else {
+        cout << "correct password! logging in" << endl;
+    }
+    cout << "masterPassword: " << masterPassword << endl;
+    jsonManager.writeLoginFile();
     displayMenu();
 }
+
+void PasswordManager::displayMenu() {
+    cout << "displaying menu" << endl;
+    loadImage("images/mainMenu.bmp");
+}
+

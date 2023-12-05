@@ -20,7 +20,7 @@ private:
 public:
     void findJsonFile();
 
-    map<string, vector<Data>>& getInfo();
+    map<string, vector<Data>>& getDataInfo();
 
     void setInfo(map<string, vector<Data>> jsonInfo);
 

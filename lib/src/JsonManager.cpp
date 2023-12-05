@@ -14,7 +14,7 @@ using namespace std;
 using namespace rapidjson;
 
 // getters and setters
-map<string, vector<Data>> &JsonManager::getInfo() {
+map<string, vector<Data>> &JsonManager::getDataInfo() {
     return info;
 }
 

@@ -1,14 +1,12 @@
-#include "../include/PasswordManager.h"
-#include "../include/MyApp.h"
-#include "../digestpp/digestpp.hpp"
+#include "lib/include/PasswordManager.h"
+#include "lib/digestpp/digestpp.hpp"
 
 using namespace std;
 using namespace digestpp;
 
 int main() {
-    /*PasswordManager manager;
-    manager.checkJsonFile();
-    manager.startup();*/
-    /*MyApp app;
-    app.testing();*/
+    PasswordManager app;
+    app.loginWindow();
+
+    return 0;
 }

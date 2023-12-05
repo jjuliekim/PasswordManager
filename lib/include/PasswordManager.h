@@ -1,34 +1,41 @@
 //
-// Created by julie on 11/27/2023.
+// Created by julie on 12/3/2023.
 //
 
 #ifndef PASSWORDMANAGER_PASSWORDMANAGER_H
 #define PASSWORDMANAGER_PASSWORDMANAGER_H
 
+
+#include <SDL2/SDL.h>
+#include <string>
 #include "JsonManager.h"
-#include <iostream>
+
+using namespace std;
 
 class PasswordManager {
 private:
+    SDL_Window *window{};
+    SDL_Renderer *renderer{};
+    int width = 400;
+    int height = 500;
     JsonManager jsonManager;
     string username;
     string masterPassword;
     bool firstTime = false;
 public:
-    void startup();
+    void loginWindow();
 
-    void checkJsonFile();
+    void enterUsername();
+
+    void checkUsername(const string& username);
+
+    void loadImage(const char *img);
+
+    void enterPassword();
+
+    void checkPassword(string pw);
 
     void displayMenu();
-
-    void addPassword();
-
-    void viewPasswords();
-
-    void optionsResult(int index);
-
-    void generatePassword();
 };
-
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H
