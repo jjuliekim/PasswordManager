@@ -233,19 +233,181 @@ void PasswordManager::displayMenu() {
         }
     }
 }
+#include "colormod.h"
+using namespace Color;
+
+Modifier blue(Color::BLUE);
+Modifier red(Color::RED);
+Modifier green(Color::GREEN);
+Modifier bold(Color::BOLD);
+Modifier reset(Color::FORMAT_RESET);
+Modifier def(Color::COLOR_DEFAULT);
 
 // view all password info
 void PasswordManager::viewPasswords() {
+    loadImage("images/viewPW/viewMenu.bmp");
+    cout << blue << "\n==== View Passwords ====" << def << endl;
+    cout << blue << "[0] " << def << "Back to main menu" << endl;
+    if (!firstTime) {
+        for (int i = 0; i < jsonManager.getDataInfo()[username].size(); i++) {
+            cout << blue << "[" << i + 1 << "] " << def << jsonManager.getDataInfo()[username][i].getWebsite() << endl;
+        }
+    }
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_0) {
+                    displayMenu();
+                    break;
+                } else if (event.key.keysym.sym < SDLK_1 || event.key.keysym.sym > SDLK_9) {
+                    loadImage("images/viewPW/invalidInput.bmp");
+                } else if (event.key.keysym.sym - SDLK_1 < jsonManager.getDataInfo()[username].size()) {
+                    loadImage("images/viewPW/validInput.bmp");
+                    SDL_Delay(2000);
+                    cout << "index: " << event.key.keysym.sym - SDLK_1 << endl;
+                    viewOptions(event.key.keysym.sym - SDLK_1);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// view options for specific password
+void PasswordManager::viewOptions(int index) {
+    loadImage("images/viewPW/options.bmp");
+    cout << blue << "[Account information for " << jsonManager.getDataInfo()[username][index].getWebsite() << "]"
+    << def << endl;
+    cout << "Username/Email -> " << jsonManager.getDataInfo()[username][index].getName() << endl;
+    cout << "Password -> " << jsonManager.getDataInfo()[username][index].getPassword() << endl;
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_0) {
+                    viewPasswords();
+                    break;
+                } else if (event.key.keysym.sym == SDLK_1) {
+                    editUsername(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                } else if (event.key.keysym.sym == SDLK_2) {
+                    editPassword(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                } else if (event.key.keysym.sym == SDLK_3) {
+                    deletePassword(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 62 && x <= 106 && y >= 157 && y <= 202) {
+                    viewPasswords();
+                    break;
+                } else if (x >= 62 && x <= 106 && y >= 243 && y <= 288) {
+                    editUsername(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                } else if (x >= 62 && x <= 106 && y >= 326 && y <= 371) {
+                    editPassword(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                } else if (x >= 62 && x <= 107 && y >= 404 && y <= 449) {
+                    deletePassword(index);
+                    SDL_Delay(2000);
+                    viewPasswords();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// edit username in json file
+void PasswordManager::editUsername(int index) {
+    loadImage("images/edit/name.bmp");
+    vector<string> typingImages{"name.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
+    int i = 0;
+    string input;
+
+    while (true) {
+        SDL_Event event;
+        if (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_RETURN) {
+                    loadImage("images/edit/editedName.bmp");
+                    jsonManager.getDataInfo()[username][index].setName(input);
+                    SDL_Delay(2000);
+                    viewOptions(index);
+                    break;
+                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                    if (input.length() > 0) {
+                        input.pop_back();
+                    }
+                    if (i > 0) {
+                        i--;
+                        string prefix = "images/login/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                } else {
+                    input += event.key.keysym.sym;
+                    if (i < typingImages.size() - 1) {
+                        i++;
+                        string prefix = "images/login/" + typingImages[i];
+                        loadImage(prefix.c_str());
+                    }
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
+                    loadImage("images/edit/editedName.bmp");
+                    jsonManager.getDataInfo()[username][index].setName(input);
+                    SDL_Delay(2000);
+                    viewOptions(index);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// edit password in json file
+void PasswordManager::editPassword(int index) {
 
 }
 
-// add password information
+// delete password in json file
+void PasswordManager::deletePassword(int index) {
+
+}
+
 void PasswordManager::addPassword() {
 
 }
 
-// generate a random password
 void PasswordManager::generatePassword() {
 
 }
+
 

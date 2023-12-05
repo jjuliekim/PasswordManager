@@ -65,7 +65,7 @@ void JsonManager::loadDataFile() {
             string name = dataContainer["name"].GetString();
             string password = dataContainer["password"].GetString();
             string website = dataContainer["website"].GetString();
-            Data data(name, password, website, authKey);
+            Data data(name, password, website);
             info[username].push_back(data);
         }
     }

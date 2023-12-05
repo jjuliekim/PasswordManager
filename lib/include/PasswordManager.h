@@ -44,6 +44,14 @@ public:
     void addPassword();
 
     void generatePassword();
+
+    void viewOptions(int index);
+
+    void editUsername(int index);
+
+    void editPassword(int index);
+
+    void deletePassword(int index);
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H
