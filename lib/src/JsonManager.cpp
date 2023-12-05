@@ -133,7 +133,6 @@ void JsonManager::writeLoginFile() {
 
 // call all write functions
 void JsonManager::writeFiles() {
-    cout << "saving" << endl;
     writeLoginFile();
     writeDataFile();
 }
