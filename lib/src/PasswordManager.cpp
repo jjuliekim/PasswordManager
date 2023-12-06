@@ -56,7 +56,7 @@ void PasswordManager::loginWindow() {
             }
             // if user clicks mouse anywhere
             if (event.type == SDL_MOUSEBUTTONDOWN) {
-                enterUsername();
+                login("images/login/", "username.bmp", username);
                 break;
             }
         }
@@ -79,11 +79,6 @@ void PasswordManager::loadImage(const char *img) {
     SDL_RenderPresent(renderer);
 }
 
-// log in page
-void PasswordManager::enterUsername() {
-    login("images/login/", "username.bmp", username);
-}
-
 // check if username already exists in json
 void PasswordManager::checkUsername() {
     sha256 shaHash;
@@ -95,11 +90,6 @@ void PasswordManager::checkUsername() {
         firstTime = true;
     }
     jsonManager.writeDataFile();
-    enterPassword();
-}
-
-// user input password screen
-void PasswordManager::enterPassword() {
     login("images/enterPW/", "password.bmp", masterPassword);
 }
 
@@ -113,7 +103,7 @@ void PasswordManager::checkPassword() {
         loadImage("images/enterPW/noPW.bmp");
         masterPassword = "";
         SDL_Delay(1500);
-        enterPassword();
+        login("images/enterPW/", "password.bmp", masterPassword);
         return;
     } else {
         loadImage("images/enterPW/yesPW.bmp");
@@ -123,7 +113,8 @@ void PasswordManager::checkPassword() {
     displayMenu();
 }
 
-void PasswordManager::login(const string& prefix, string ogImage, string &input) {
+// get user input for username/password log in page
+void PasswordManager::login(const string &prefix, string ogImage, string &input) {
     loadImage((prefix + ogImage).c_str());
     vector<string> typingImages{ogImage, "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
@@ -235,7 +226,7 @@ void PasswordManager::viewPasswords() {
                     displayMenu();
                     break;
                 }
-                if (event.key.keysym.sym == SDLK_RETURN) {
+                if (event.key.keysym.sym == SDLK_RETURN && !input.empty()) {
                     if (stoi(input) > 0 && stoi(input) <= jsonManager.getDataInfo()[username].size()) {
                         loadImage("images/viewPW/validInput.bmp");
                         SDL_Delay(500);
@@ -284,12 +275,12 @@ void PasswordManager::viewOptions(int index) {
                     viewPasswords();
                     break;
                 } else if (event.key.keysym.sym == SDLK_1) {
-                    editUsername(index);
+                    edit(index, "images/login/", "username.bmp");
                     SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (event.key.keysym.sym == SDLK_2) {
-                    editPassword(index);
+                    edit(index, "images/enterPW/", "password.bmp");
                     SDL_Delay(1500);
                     viewPasswords();
                     break;
@@ -308,12 +299,12 @@ void PasswordManager::viewOptions(int index) {
                     viewPasswords();
                     break;
                 } else if (x >= 62 && x <= 106 && y >= 243 && y <= 288) {
-                    editUsername(index);
+                    edit(index, "images/login/", "username.bmp");
                     SDL_Delay(1500);
                     viewPasswords();
                     break;
                 } else if (x >= 62 && x <= 106 && y >= 326 && y <= 371) {
-                    editPassword(index);
+                    edit(index, "images/enterPW/", "password.bmp");
                     SDL_Delay(1500);
                     viewPasswords();
                     break;
@@ -329,10 +320,10 @@ void PasswordManager::viewOptions(int index) {
     }
 }
 
-// edit username in json file
-void PasswordManager::editUsername(int index) {
-    loadImage("images/login/username.bmp");
-    vector<string> typingImages{"username.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+// edit username/password in json file
+void PasswordManager::edit(int index, const string &prefix, const string &ogImage) {
+    loadImage((prefix + ogImage).c_str());
+    vector<string> typingImages{ogImage, "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int i = 0;
     string input;
@@ -345,8 +336,13 @@ void PasswordManager::editUsername(int index) {
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
-                    loadImage("images/edit/editedName.bmp");
-                    jsonManager.getDataInfo()[username][index].setName(input);
+                    if (ogImage == "username.bmp") {
+                        loadImage("images/edit/editedName.bmp");
+                        jsonManager.getDataInfo()[username][index].setName(input);
+                    } else {
+                        loadImage("images/edit/editedPass.bmp");
+                        jsonManager.getDataInfo()[username][index].setPassword(input);
+                    }
                     jsonManager.writeDataFile();
                     SDL_Delay(1500);
                     viewOptions(index);
@@ -357,15 +353,15 @@ void PasswordManager::editUsername(int index) {
                     }
                     if (i > 0) {
                         i--;
-                        string prefix = "images/login/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                        string fp = prefix + typingImages[i];
+                        loadImage(fp.c_str());
                     }
                 } else {
                     input += event.key.keysym.sym;
                     if (i < typingImages.size() - 1) {
                         i++;
-                        string prefix = "images/login/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                        string fp = prefix + typingImages[i];
+                        loadImage(fp.c_str());
                     }
                 }
             }
@@ -373,66 +369,15 @@ void PasswordManager::editUsername(int index) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/edit/editedName.bmp");
-                    jsonManager.getDataInfo()[username][index].setName(input);
+                    if (ogImage == "username.bmp") {
+                        loadImage("images/edit/editedName.bmp");
+                        jsonManager.getDataInfo()[username][index].setName(input);
+                    } else {
+                        loadImage("images/edit/editedPass.bmp");
+                        jsonManager.getDataInfo()[username][index].setPassword(input);
+                    }
                     jsonManager.writeDataFile();
                     SDL_Delay(1500);
-                    viewOptions(index);
-                    break;
-                }
-            }
-        }
-    }
-}
-
-// edit password in json file
-void PasswordManager::editPassword(int index) {
-    loadImage("images/enterPW/password.bmp");
-    vector<string> typingImages{"password.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
-                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
-    int i = 0;
-    string input;
-
-    while (true) {
-        SDL_Event event;
-        if (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                break;
-            }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
-                    loadImage("images/edit/editedPass.bmp");
-                    jsonManager.getDataInfo()[username][index].setPassword(input);
-                    jsonManager.writeDataFile();
-                    SDL_Delay(1500);
-                    viewOptions(index);
-                    break;
-                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
-                    if (input.length() > 0) {
-                        input.pop_back();
-                    }
-                    if (i > 0) {
-                        i--;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                } else {
-                    input += event.key.keysym.sym;
-                    if (i < typingImages.size() - 1) {
-                        i++;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                }
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/edit/editedPass.bmp");
-                    jsonManager.getDataInfo()[username][index].setName(input);
-                    jsonManager.writeDataFile();
-                    SDL_Delay(2000);
                     viewOptions(index);
                     break;
                 }
@@ -443,9 +388,9 @@ void PasswordManager::editPassword(int index) {
 
 // add password data to json file
 void PasswordManager::addPassword() {
-    string website = getWebsiteInput();
-    string name = getNameInput();
-    string password = getPasswordInput();
+    string website = getDataInput("images/enterWebsite/", "website.bmp");
+    string name = getDataInput("images/login/", "username.bmp");
+    string password = getDataInput("images/enterPW/", "password.bmp");
     Data data(name, password, website);
     jsonManager.getDataInfo()[username].push_back(data);
     if (firstTime) {
@@ -458,11 +403,11 @@ void PasswordManager::addPassword() {
     displayMenu();
 }
 
-// get user input for new website info
-string PasswordManager::getWebsiteInput() {
+// get user input for new password data
+string PasswordManager::getDataInput(const string &prefix, const string &ogImage) {
     string input;
-    loadImage("images/enterWebsite/website.bmp");
-    vector<string> typingImages{"website.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
+    loadImage((prefix + ogImage).c_str());
+    vector<string> typingImages{ogImage, "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
     int i = 0;
 
@@ -474,7 +419,13 @@ string PasswordManager::getWebsiteInput() {
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
-                    loadImage("images/add/websiteInputted.bmp");
+                    if (ogImage == "username.bmp") {
+                        loadImage("images/add/nameInputted.bmp");
+                    } else if (ogImage == "password.bmp") {
+                        loadImage("images/add/passInputted.bmp");
+                    } else {
+                        loadImage("images/add/websiteInputted.bmp");
+                    }
                     SDL_Delay(1500);
                     return input;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -483,15 +434,15 @@ string PasswordManager::getWebsiteInput() {
                     }
                     if (i > 0) {
                         i--;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                        string fp = prefix + typingImages[i];
+                        loadImage(fp.c_str());
                     }
                 } else {
                     input += event.key.keysym.sym;
                     if (i < typingImages.size() - 1) {
                         i++;
-                        string prefix = "images/enterWebsite/" + typingImages[i];
-                        loadImage(prefix.c_str());
+                        string fp = prefix + typingImages[i];
+                        loadImage(fp.c_str());
                     }
                 }
             }
@@ -499,109 +450,13 @@ string PasswordManager::getWebsiteInput() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/add/websiteInputted.bmp");
-                    SDL_Delay(1500);
-                    return input;
-                }
-            }
-        }
-    }
-    return input;
-}
-
-// get user input for new username info
-string PasswordManager::getNameInput() {
-    string input;
-    loadImage("images/login/username.bmp");
-    vector<string> typingImages{"username.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
-                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
-    int i = 0;
-
-    while (true) {
-        SDL_Event event;
-        if (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                break;
-            }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
-                    loadImage("images/add/nameInputted.bmp");
-                    SDL_Delay(1500);
-                    return input;
-                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
-                    if (input.length() > 0) {
-                        input.pop_back();
+                    if (ogImage == "username.bmp") {
+                        loadImage("images/add/nameInputted.bmp");
+                    } else if (ogImage == "password.bmp") {
+                        loadImage("images/add/passInputted.bmp");
+                    } else {
+                        loadImage("images/add/websiteInputted.bmp");
                     }
-                    if (i > 0) {
-                        i--;
-                        string prefix = "images/login/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                } else {
-                    input += event.key.keysym.sym;
-                    if (i < typingImages.size() - 1) {
-                        i++;
-                        string prefix = "images/login/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                }
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/add/nameInputted.bmp");
-                    SDL_Delay(1500);
-                    return input;
-                }
-            }
-        }
-    }
-    return input;
-}
-
-// get user input for new password info
-string PasswordManager::getPasswordInput() {
-    string input;
-    loadImage("images/enterPW/password.bmp");
-    vector<string> typingImages{"password.bmp", "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
-                                "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
-    int i = 0;
-
-    while (true) {
-        SDL_Event event;
-        if (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                break;
-            }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_RETURN && input.length() > 0) {
-                    loadImage("images/add/passInputted.bmp");
-                    SDL_Delay(1500);
-                    return input;
-                } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
-                    if (input.length() > 0) {
-                        input.pop_back();
-                    }
-                    if (i > 0) {
-                        i--;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                } else {
-                    input += event.key.keysym.sym;
-                    if (i < typingImages.size() - 1) {
-                        i++;
-                        string prefix = "images/enterPW/" + typingImages[i];
-                        loadImage(prefix.c_str());
-                    }
-                }
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN && input.length() > 0) {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                if (x >= 150 && x <= 250 && y >= 290 && y <= 324) {
-                    loadImage("images/add/passInputted.bmp");
                     SDL_Delay(1500);
                     return input;
                 }

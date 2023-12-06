@@ -27,13 +27,9 @@ public:
 
     void loginWindow();
 
-    void enterUsername();
-
     void checkUsername();
 
     void loadImage(const char *img);
-
-    void enterPassword();
 
     void checkPassword();
 
@@ -47,19 +43,13 @@ public:
 
     void viewOptions(int index);
 
-    void editUsername(int index);
-
-    void editPassword(int index);
-
-    string getNameInput();
-
-    string getPasswordInput();
-
-    string getWebsiteInput();
-
     int getPasswordLength();
 
-    void login(const string& prefix, string ogImage, string &input);
+    void login(const string &prefix, string ogImage, string &input);
+
+    void edit(int index, const string &prefix, const string &ogImage);
+
+    string getDataInput(const string &prefix, const string &ogImage);
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H
