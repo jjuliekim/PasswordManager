@@ -32,7 +32,6 @@ void JsonManager::findJsonFile() {
     }
     ifstream loginFile(loginLocation);
     if (!loginFile) {
-        cout << "making new file" << endl;
         ofstream newFile(loginLocation);
         newFile << "[]";
         newFile.close();

@@ -59,7 +59,7 @@ public:
 
     int getPasswordLength();
 
-    void login(string prefix, string ogImage, string &input);
+    void login(const string& prefix, string ogImage, string &input);
 };
 
 #endif //PASSWORDMANAGER_PASSWORDMANAGER_H

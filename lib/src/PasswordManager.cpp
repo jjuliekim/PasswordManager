@@ -111,6 +111,7 @@ void PasswordManager::checkPassword() {
         jsonManager.getLoginInfo().insert({username, masterPassword});
     } else if (masterPassword != jsonManager.getLoginInfo()[username]) {
         loadImage("images/enterPW/noPW.bmp");
+        masterPassword = "";
         SDL_Delay(1500);
         enterPassword();
         return;
@@ -122,7 +123,7 @@ void PasswordManager::checkPassword() {
     displayMenu();
 }
 
-void PasswordManager::login(string prefix, string ogImage, string &input) {
+void PasswordManager::login(const string& prefix, string ogImage, string &input) {
     loadImage((prefix + ogImage).c_str());
     vector<string> typingImages{ogImage, "1Star.bmp", "2Star.bmp", "3Star.bmp", "4Star.bmp", "5Star.bmp",
                                 "6Star.bmp", "7Star.bmp", "8Star.bmp", "9Star.bmp", "10Star.bmp"};
@@ -260,6 +261,9 @@ void PasswordManager::viewPasswords() {
             }
         }
     }
+    jsonManager.writeFiles();
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 }
 
 // view options for specific password
@@ -344,7 +348,7 @@ void PasswordManager::editUsername(int index) {
                     loadImage("images/edit/editedName.bmp");
                     jsonManager.getDataInfo()[username][index].setName(input);
                     jsonManager.writeDataFile();
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewOptions(index);
                     break;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -372,7 +376,7 @@ void PasswordManager::editUsername(int index) {
                     loadImage("images/edit/editedName.bmp");
                     jsonManager.getDataInfo()[username][index].setName(input);
                     jsonManager.writeDataFile();
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewOptions(index);
                     break;
                 }
@@ -400,7 +404,7 @@ void PasswordManager::editPassword(int index) {
                     loadImage("images/edit/editedPass.bmp");
                     jsonManager.getDataInfo()[username][index].setPassword(input);
                     jsonManager.writeDataFile();
-                    SDL_Delay(2000);
+                    SDL_Delay(1500);
                     viewOptions(index);
                     break;
                 } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
@@ -630,7 +634,7 @@ void PasswordManager::generatePassword() {
     vector<char> passwordVector(password.begin(), password.end());
     shuffle(passwordVector.begin(), passwordVector.end(), mt19937(random_device()()));
     password = string(passwordVector.begin(), passwordVector.end());
-    cout << blue << "==== Generated password ====" << def << endl;
+    cout << blue << "\n==== Generated password ====" << def << endl;
     cout << password << endl;
 
     loadImage("images/genPW/pwGen.bmp");
